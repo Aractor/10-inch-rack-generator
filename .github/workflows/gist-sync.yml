@@ -1,0 +1,35 @@
+name: Sync UniFi Rack Simulator from Gist
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # Daily at 00:00 UTC
+  workflow_dispatch:        # Lets you trigger it manually from the Actions tab for testing
+
+permissions:
+  contents: write            # Needed so the workflow can commit index.html back to the repo
+
+jobs:
+  sync-gist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Clone latest revision of the gist
+        run: git clone https://gist.github.com/50ed404e8d09142a49350081e8cee614.git gist-source
+
+      - name: Copy gist file into place as index.html
+        run: |
+          # Adjust this filename if the gist ever contains more than one file
+          SOURCE_FILE=$(find gist-source -maxdepth 1 -type f | head -n 1)
+          if [ -z "$SOURCE_FILE" ]; then
+            echo "No file found in gist clone" >&2
+            exit 1
+          fi
+          cp "$SOURCE_FILE" index.html
+
+      - name: Commit and push if the file changed
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Sync index.html from gist (automated daily update)"
+          file_pattern: index.html
