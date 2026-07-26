@@ -860,7 +860,7 @@
                 <div class="panel-title">Rack Specs & Zoom</div>
                 <div class="counter-box" style="margin-bottom: 8px;">
                     <span class="counter-label">Total Space (U)</span>
-                    <input type="number" id="input-max-u" min="1" max="16" value="10" style="width: 70px; padding: 6px; border: 1px solid var(--panel-border); border-radius: 6px; text-align: center; font-weight: bold; font-size: 14px; outline: none; background:var(--panel-bg); color:var(--text-color);">
+                    <input type="number" id="input-max-u" min="1" max="24" value="10" style="width: 70px; padding: 6px; border: 1px solid var(--panel-border); border-radius: 6px; text-align: center; font-weight: bold; font-size: 14px; outline: none; background:var(--panel-bg); color:var(--text-color);">
                 </div>
                 <div style="display: flex; gap: 5px; margin-bottom: 8px;">
                     <button id="btn-zoom-out" class="btn" style="flex:1;">🔍- Zoom Out</button>
@@ -1699,7 +1699,7 @@
                 document.getElementById('input-max-u').addEventListener('change', e => {
                     let val = parseInt(e.target.value);
                     if (isNaN(val) || val < 1) val = 1;
-                    if (val > 16) val = 16;
+                    if (val > 24) val = 24;
                     e.target.value = val;
                     App.changeMaxU(val);
                 });
