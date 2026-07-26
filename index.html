@@ -2042,6 +2042,13 @@
 
                 let stdCount = 0, twoFiveGCount = 0, xgCount = 0, wanCount = 0, sfpCount = 0, patchCount = 0, conflictCount = 0;
 
+                // First pass: work out each cable's geometry (and, importantly, how far its
+                // sagging loop dips below the rack) before touching the DOM. Cable endpoints
+                // are anchored to real ports, so their computed positions stay valid even
+                // after we resize the wrapper below — no need to recompute them twice.
+                const prepared = [];
+                let maxBottomY = -Infinity;
+
                 this.connections.forEach((c, index) => {
                     const portA = document.querySelector(`[data-port-id="${c.from}"]`);
                     const portB = document.querySelector(`[data-port-id="${c.to}"]`);
@@ -2055,7 +2062,7 @@
 
                     const dx = Math.abs(x2 - x1);
                     const dy = Math.abs(y2 - y1);
-                    let sag = Math.max(dy, 60) + dx * 0.25;
+                    const sag = Math.max(dy, 60) + dx * 0.25;
 
                     let cp_x1 = x1, cp_x2 = x2;
                     if (dx < 40) {
@@ -2063,8 +2070,11 @@
                         cp_x1 += loopOffset; cp_x2 += loopOffset;
                     }
 
-                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    const d = `M ${x1} ${y1} C ${cp_x1} ${y1 + sag} ${cp_x2} ${y2 + sag} ${x2} ${y2}`;
+                    const cp_y1 = y1 + sag;
+                    const cp_y2 = y2 + sag;
+                    maxBottomY = Math.max(maxBottomY, cp_y1, cp_y2, y1, y2);
+
+                    const d = `M ${x1} ${y1} C ${cp_x1} ${cp_y1} ${cp_x2} ${cp_y2} ${x2} ${y2}`;
 
                     let cableColor = '#3b82f6';
                     const ptypeA = this.getPortType(c.from);
@@ -2090,6 +2100,28 @@
                         stdCount++;
                     }
 
+                    prepared.push({ index, d, cableColor, portA, portB });
+                });
+
+                // Grow the wrapper's bottom spacing so any sagging loop is fully contained
+                // in real layout (not just visual overflow). This fixes the cable getting
+                // cut off both on-screen (the page now actually scrolls far enough to show
+                // it) and in the PNG export (html2canvas only captures an element's own
+                // layout box, not ink that visually spills outside of it).
+                const rackWrapper = document.getElementById('rack-wrapper');
+                const cabinet = document.querySelector('.rack-cabinet');
+                if (rackWrapper && cabinet && prepared.length > 0) {
+                    const cabinetRect = cabinet.getBoundingClientRect();
+                    const cabinetBottomInSVG = getMouseInSVG(svg, { clientX: cabinetRect.left, clientY: cabinetRect.bottom }).y;
+                    const overflowBelow = maxBottomY - cabinetBottomInSVG;
+                    rackWrapper.style.paddingBottom = overflowBelow > 0 ? `${Math.ceil(overflowBelow) + 30}px` : '';
+                } else if (rackWrapper) {
+                    rackWrapper.style.paddingBottom = '';
+                }
+
+                // Second pass: now that there's room for them, build and append the paths.
+                prepared.forEach(({ index, d, cableColor, portA, portB }) => {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     path.setAttribute('id', `cable-${index}`);
                     path.setAttribute('class', 'cable-path');
                     path.setAttribute('d', d);
