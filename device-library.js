@@ -51,7 +51,7 @@ const DEVICE_TYPES = {
     /* Servers & Mini PCs */
     'dell-optiplex-micro': { name: 'Dell OptiPlex Micro PC (1U 3D Mount)', ports: ['poe', '2.5g'], uHeight: 1, bracket: true, bracketWidth: 235, layout: 'dell-optiplex', tdp: 35, poeBudget: 0, heatWeight: 4 },
     'nvidia-dgx-spark': { name: 'NVIDIA DGX Spark Grace Blackwell (2U 10" 3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'nvidia-dgx-spark', tdp: 240, poeBudget: 0, heatWeight: 8 },
-    'apple-mac-mini-m4': { name: 'Apple Mac Mini M4 (3U 10" 3D Mount)', ports: ['10g'], uHeight: 3, bracket: true, bracketWidth: 220, layout: 'mac-mini-m4', tdp: 20, poeBudget: 0, heatWeight: 2 },
+    'apple-mac-mini-m4': { name: 'Apple Mac Mini M4 (2U 10" 3D Mount)', ports: ['10g'], uHeight: 2, bracket: true, bracketWidth: 220, layout: 'mac-mini-m4', tdp: 20, poeBudget: 0, heatWeight: 2 },
     'minisforum-nab9': { name: 'Minisforum NAB9 (2U 10" 3D Mount)', ports: ['poe'], uHeight: 2, bracket: true, bracketWidth: 220, layout: 'minisforum-nab9', tdp: 28, poeBudget: 0, heatWeight: 3 },
     'diy-matx-motherboard': { name: 'DIY Micro ATX Motherboard (3U 3D Mount)', ports: ['poe'], uHeight: 3, bracket: true, bracketWidth: 260, layout: 'diy-matx-motherboard', tdp: 65, poeBudget: 0, heatWeight: 5 },
 
