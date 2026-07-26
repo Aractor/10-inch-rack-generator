@@ -1008,6 +1008,12 @@
             return { x: svgPt.x, y: svgPt.y };
         }
 
+        // Cables sag proportionally to how far apart their two ports are, but capping it
+        // keeps the loop visually compact even for far-apart ports (e.g. a top patch panel
+        // cabled to a device near the very bottom of a tall rack) instead of ballooning into
+        // a huge dangling loop that wastes space below the rack.
+        const MAX_CABLE_SAG = 90;
+
         const DeviceFactory = {
             create(type, startSubSlot = null) {
                 const spec = DEVICE_TYPES[type];
@@ -1416,7 +1422,7 @@
 
                 const dx = Math.abs(x2 - x1);
                 const dy = Math.abs(y2 - y1);
-                const sag = Math.max(dy, 60) + dx * 0.25;
+                const sag = Math.min(Math.max(dy, 60) + dx * 0.25, MAX_CABLE_SAG);
 
                 let cp_x1 = x1, cp_x2 = x2;
                 if (dx < 40) {
@@ -2062,7 +2068,7 @@
 
                     const dx = Math.abs(x2 - x1);
                     const dy = Math.abs(y2 - y1);
-                    const sag = Math.max(dy, 60) + dx * 0.25;
+                    const sag = Math.min(Math.max(dy, 60) + dx * 0.25, MAX_CABLE_SAG);
 
                     let cp_x1 = x1, cp_x2 = x2;
                     if (dx < 40) {
