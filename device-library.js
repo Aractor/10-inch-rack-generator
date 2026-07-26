@@ -53,7 +53,10 @@ const DEVICE_TYPES = {
     'nvidia-dgx-spark': { name: 'NVIDIA DGX Spark Grace Blackwell (2U 10" 3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'nvidia-dgx-spark', tdp: 240, poeBudget: 0, heatWeight: 8 },
     'apple-mac-mini-m4': { name: 'Apple Mac Mini M4 (3U 10" 3D Mount)', ports: ['10g'], uHeight: 3, bracket: true, bracketWidth: 220, layout: 'mac-mini-m4', tdp: 20, poeBudget: 0, heatWeight: 2 },
     'minisforum-nab9': { name: 'Minisforum NAB9 (2U 10" 3D Mount)', ports: ['poe'], uHeight: 2, bracket: true, bracketWidth: 220, layout: 'minisforum-nab9', tdp: 28, poeBudget: 0, heatWeight: 3 },
-    'diy-matx-motherboard': { name: 'DIY Micro ATX Motherboard (3U 3D Mount)', ports: ['poe'], uHeight: 3, bracket: true, bracketWidth: 260, layout: 'diy-matx-motherboard', tdp: 65, poeBudget: 0, heatWeight: 5 }
+    'diy-matx-motherboard': { name: 'DIY Micro ATX Motherboard (3U 3D Mount)', ports: ['poe'], uHeight: 3, bracket: true, bracketWidth: 260, layout: 'diy-matx-motherboard', tdp: 65, poeBudget: 0, heatWeight: 5 },
+
+    /* Miscellaneous */
+    'jetkvm': { name: 'JetKVM (1U 3D Mount)', ports: ['poe'], uHeight: 1, bracket: true, bracketWidth: 140, layout: 'jetkvm', tdp: 5, poeBudget: 0, heatWeight: 1 }
 };
 
 const PORT_SPECS = {
@@ -84,5 +87,6 @@ const CATEGORIES = [
     { title: '🌐 Routers & Gateways', types: ['ucg-max', 'ucg-ultra', 'ucg-fiber', 'ux7'] },
     { title: '📹 UniFi Consoles & Protect NVR', types: ['uck-g2-plus', 'unvr-instant'] },
     { title: '🍓 Cluster & Blade Racks (Rapid Analysis)', types: ['rapidanalysis-xerxes-6x', 'raspberry-pi-4b-2x'] },
-    { title: '💻 Servers, Mini PCs & AI (Dell / NVIDIA)', types: ['dell-optiplex-micro', 'nvidia-dgx-spark', 'apple-mac-mini-m4', 'minisforum-nab9', 'diy-matx-motherboard'] }
+    { title: '💻 Servers, Mini PCs & AI (Dell / NVIDIA)', types: ['dell-optiplex-micro', 'nvidia-dgx-spark', 'apple-mac-mini-m4', 'minisforum-nab9', 'diy-matx-motherboard'] },
+    { title: '⚙️Miscellaneous', types: ['jetkvm'] }
 ];
