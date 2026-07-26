@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniFi 10-Inch Matte White Rack Simulator (PRO Edition)</title>
+    <title>10-Inch Home Lab Rack Generator</title>
     <!-- Include html2canvas for DOM/SVG rendering and PNG downloads -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js"></script>
     <style>
@@ -16,6 +16,7 @@
             --accent-blue: #0055ff; /* UniFi PoE Classic Blue */
             --accent-green: #10b981; /* Gigabit Green */
             --accent-orange: #f97316; /* 10G Orange */
+            --accent-25g: #a855f7; /* 2.5G Ethernet Purple */
             --accent-sfp: #00b4d8; /* SFP+ Light Blue */
             --accent-red: #ef4444;
             --rack-rail-color: #94a3b8;
@@ -97,9 +98,24 @@
         .category-title {
             font-size: 12px; font-weight: bold; color: var(--accent-blue);
             text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; justify-content: space-between; gap: 6px;
             border-bottom: 1px dashed var(--panel-border); padding-bottom: 4px;
+            cursor: pointer; user-select: none; -webkit-user-select: none;
         }
+
+        .category-title:hover { color: #0044cc; }
+        body.dark-mode .category-title:hover { color: #4d94ff; }
+
+        .category-title-text { flex: 1; }
+
+        .category-chevron {
+            flex-shrink: 0; font-size: 10px; transition: transform 0.2s ease;
+            transform: rotate(0deg);
+        }
+
+        .sidebar-category.collapsed .category-title { margin-bottom: 0; border-bottom-color: transparent; }
+        .sidebar-category.collapsed .category-chevron { transform: rotate(-90deg); }
+        .sidebar-category.collapsed .category-items { display: none; }
 
         .device-card {
             background: var(--panel-bg); border: 1px solid var(--panel-border);
@@ -274,8 +290,7 @@
 
         .device[data-type="blank"] .device-body { background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
         
-        .device[data-type="brush-panel"] .device-body,
-        .device[data-type="deskpi-dp0043"] .device-body {
+        .device[data-type="brush-panel"] .device-body {
             background: repeating-linear-gradient(90deg, #111827, #111827 6px, #1e293b 6px, #1e293b 9px);
             box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
             border-top: 1px solid #334155; border-bottom: 1px solid #334155;
@@ -320,7 +335,7 @@
 
         .dell-chassis {
             background: #18181b; border: 1.5px solid #3f3f46; border-radius: 4px;
-            height: 34px; display: flex; align-items: center; padding: 2px 6px; box-sizing: border-box;
+            height: 70%; display: flex; align-items: center; padding: 2px 6px; box-sizing: border-box;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4);
         }
 
@@ -328,8 +343,7 @@
         .dell-left-panel { display: flex; align-items: center; gap: 5px; height: 100%; padding-right: 6px; border-right: 1px solid #3f3f46; }
         .dell-power-btn { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #71717a; background: radial-gradient(circle, #3f3f46 40%, #18181b 100%); display: flex; align-items: center; justify-content: center; }
         .dell-power-btn .power-icon { width: 4px; height: 4px; border-top: 1.5px solid #38bdf8; border-radius: 50%; }
-        .dell-jacks { display: flex; gap: 2px; }
-        .dell-jack { width: 5px; height: 5px; border-radius: 50%; background: #090d16; border: 1px solid #52525b; }
+        .dell-ports-group { gap: 3px; }
         .dell-usb3 { width: 10px; height: 5px; background: #0284c7; border: 1px solid #38bdf8; border-radius: 1px; }
         .dell-usbc { width: 8px; height: 4px; background: #090d16; border: 1px solid #71717a; border-radius: 2px; }
         .dell-badge { font-size: 4.5px; font-family: sans-serif; color: #a1a1aa; writing-mode: vertical-lr; text-transform: uppercase; letter-spacing: -0.3px; transform: rotate(180deg); max-height: 26px; line-height: 1; font-weight: bold; overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
@@ -460,16 +474,82 @@
             border: 1px solid rgba(0,0,0,0.1);
         }
 
-        .deskpi-chassis { background: #0f172a; border: 1.5px solid #334155; border-radius: 4px; width: 100%; height: 90%; display: flex; align-items: center; justify-content: space-around; padding: 2px 6px; box-sizing: border-box; color: #f8fafc; }
-        .deskpi-screen-container { width: 100%; height: 88%; background: #020617; border: 1px solid #334155; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,255,255,0.15); }
-        .deskpi-hud-display { width: 96%; height: 82%; background: radial-gradient(circle, #0f172a 0%, #020617 100%); border: 1px solid #1e293b; border-radius: 3px; display: flex; align-items: center; justify-content: space-around; padding: 0 4px; box-sizing: border-box; }
-        .hud-gauge { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #06b6d4; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 5px; font-weight: bold; color: #38bdf8; box-shadow: 0 0 5px rgba(6, 182, 212, 0.4); }
-        .hud-gauge.green { border-color: #10b981; color: #34d399; box-shadow: 0 0 5px rgba(16, 185, 129, 0.4); }
-        .hud-gauge.orange { border-color: #f97316; color: #fb923c; box-shadow: 0 0 5px rgba(249, 115, 22, 0.4); }
-        .hud-gauge.purple { border-color: #a855f7; color: #c084fc; box-shadow: 0 0 5px rgba(168, 85, 247, 0.4); }
+        /* Apple Mac Mini M4 3D Mount Styling */
+        .macmini-chassis {
+            width: 96%; height: 92%; box-sizing: border-box;
+            background: linear-gradient(145deg, #f4f4f6 0%, #dcdce0 55%, #c7c7cc 100%);
+            border: 1px solid #b0b0b5; border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            padding: 8px 4px; position: relative;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.06), 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .macmini-top-plate {
+            width: 82%; flex-grow: 1; border-radius: 6px; min-height: 24px;
+            background: radial-gradient(circle at 30% 20%, #ffffff 0%, #e6e6ea 45%, #c9c9ce 100%);
+            border: 1px solid #b6b6bb; display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .macmini-logo { width: 14px; height: 14px; border-radius: 50%; background: #9a9a9f; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 1px 1px rgba(0,0,0,0.15); }
+        .macmini-label { font-size: 7px; letter-spacing: 0.8px; color: #6e6e73; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .macmini-port-strip { display: flex; align-items: center; }
 
-        .deskpi-pi-bay { background: #1e293b; border: 1px solid #475569; border-radius: 3px; padding: 2px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .pi-badge { font-size: 6px; font-weight: bold; color: #ec4899; letter-spacing: -0.3px; }
+        /* Minisforum NAB9 3D Mount Styling */
+        .nab9-chassis {
+            width: 100%; height: 94%; box-sizing: border-box;
+            background: #111318; border: 1.5px solid #2a2d34; border-radius: 5px;
+            padding: 6px; display: flex; flex-direction: column; gap: 5px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 3px 6px rgba(0,0,0,0.4);
+        }
+        .nab9-vent-block {
+            flex-grow: 1; border-radius: 3px; min-height: 18px;
+            background: repeating-linear-gradient(90deg, #1c1f26, #1c1f26 3px, #0b0d11 3px, #0b0d11 5px);
+            border: 1px solid #2a2d34;
+        }
+        .nab9-footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .nab9-badge { font-size: 6.5px; font-weight: 700; letter-spacing: 0.3px; color: #e2e5ea; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .nab9-status { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .nab9-led { width: 4px; height: 4px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 4px #22c55e; }
+
+        /* DIY Micro ATX Motherboard 3D Mount Styling */
+        .mobo-chassis {
+            width: 100%; height: 94%; box-sizing: border-box;
+            background: linear-gradient(160deg, #0b3d24 0%, #0f4d2d 55%, #0b3d24 100%);
+            border: 1px solid #062a18; border-radius: 4px;
+            padding: 8px; display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.35), 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .mobo-top-row { display: flex; align-items: flex-start; gap: 8px; }
+        .mobo-cpu-socket {
+            width: 30px; height: 30px; flex-shrink: 0; background: #17181a;
+            border: 2px solid #cfa14c; border-radius: 3px; position: relative; overflow: hidden;
+        }
+        .mobo-cpu-socket::after {
+            content: ''; position: absolute; inset: 4px;
+            background: repeating-linear-gradient(0deg, #3a3a3a 0, #3a3a3a 1px, #101010 1px, #101010 3px);
+        }
+        .mobo-ram-slots { display: flex; gap: 3px; }
+        .mobo-ram-stick { width: 6px; height: 30px; background: #101010; border: 1px solid #d4af37; border-radius: 1px; }
+        .mobo-pcie-row { display: flex; gap: 4px; }
+        .mobo-pcie-slot { flex: 1; height: 7px; background: #0a0a0a; border: 1px solid #1f6b3f; border-radius: 1px; }
+        .mobo-footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .mobo-badge { font-size: 6.5px; color: #bff5d2; letter-spacing: 0.4px; font-weight: 700; white-space: nowrap; }
+
+        /* 2x Raspberry Pi 4B Side-by-Side Cluster Styling */
+        .pi-cluster-chassis { width: 100%; height: 90%; box-sizing: border-box; display: flex; gap: 5px; padding: 2px; }
+        .pi-board {
+            flex: 1; min-width: 0; box-sizing: border-box; position: relative;
+            background: linear-gradient(160deg, #0e7a34 0%, #0a5c27 55%, #0e7a34 100%);
+            border: 1px solid #063d19; border-radius: 3px; padding: 2px 3px;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 1.5px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .pi-gpio-row { display: flex; gap: 1px; justify-content: center; width: 100%; overflow: hidden; }
+        .pi-gpio-pin { width: 1.4px; height: 1.4px; background: #d4af37; border-radius: 50%; flex-shrink: 0; }
+        .pi-soc { width: 12px; height: 12px; background: #101010; border: 1px solid #2c2c2c; border-radius: 2px; box-shadow: inset 0 0 2px rgba(0,0,0,0.6); }
+        .pi-usb-row { display: flex; gap: 1.5px; }
+        .pi-usb-port { width: 5px; height: 3px; background: #0f172a; border: 1px solid #1e293b; border-radius: 0.5px; }
+        .pi-usb-port.blue { background: #1e3a8a; border-color: #3b82f6; }
+        .pi-footer { display: flex; align-items: center; justify-content: center; gap: 3px; width: 100%; }
+        .pi-badge { font-size: 5px; color: #d7f8e2; font-weight: 700; letter-spacing: 0.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .hdd-chassis { background: #18181b; border: 1.5px solid #3f3f46; border-radius: 4px; width: 100%; height: 92%; display: flex; box-sizing: border-box; padding: 3px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4); }
         .hdd-grid-1u { display: flex; width: 100%; height: 100%; gap: 4px; align-items: center; justify-content: space-around; }
@@ -497,15 +577,12 @@
         .port-label { height: 10px; font-size: 7px; text-align: center; border: 1px solid #cbd5e1; background-color: #ffffff; color: #1e293b; border-radius: 1px; padding: 0; margin: 0; outline: none; }
         .device[data-type="patch-8"] .port-label { width: 22px; }
         
-        /* Fixed: Explicit styles for 12-Port 0.5U & 1U Patch Panels */
-        .device[data-type="patch-12"] .port-label,
-        .device[data-type="deskpi-dp0034"] .port-label { width: 13px; font-size: 6px; height: 8px; line-height: 8px; }
+        /* Fixed: Explicit styles for 12-Port 1U Patch Panel */
+        .device[data-type="patch-12"] .port-label { width: 13px; font-size: 6px; height: 8px; line-height: 8px; }
         
-        .device[data-type="patch-12"] .ports-group,
-        .device[data-type="deskpi-dp0034"] .ports-group { gap: 2px; }
+        .device[data-type="patch-12"] .ports-group { gap: 2px; }
         
-        .device[data-type="patch-12"] .patch-port-unit,
-        .device[data-type="deskpi-dp0034"] .patch-port-unit { gap: 1px; }
+        .device[data-type="patch-12"] .patch-port-unit { gap: 1px; }
 
         /* Compact sizing for 0.5U height elements */
         .device.u-05 .port-rj45 { width: 10px; height: 8px; }
@@ -583,6 +660,17 @@
         }
         .report-item.occupied { border-left-color: var(--accent-blue); }
 
+        .report-panel-title {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            cursor: pointer; user-select: none; -webkit-user-select: none;
+        }
+        .report-panel-title:hover { color: #0044cc; }
+        body.dark-mode .report-panel-title:hover { color: #4d94ff; }
+        .report-panel-title-text { flex: 1; }
+        .report-state-indicator { font-size: 10px; color: var(--text-muted); text-transform: none; letter-spacing: 0; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+        .report-list-wrapper.collapsed { display: none; }
+        .report-empty-message { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 6px 10px; }
+
         .u-badge { color: var(--text-muted); font-weight: bold; }
         .text-blue { color: var(--accent-blue); }
         .text-muted { color: var(--text-muted); }
@@ -602,6 +690,45 @@
         .button-group { display: flex; flex-direction: column; gap: 8px; }
         .dragging { opacity: 0.4; }
 
+        .export-menu-wrapper { position: relative; }
+
+        .export-dropdown {
+            position: absolute; top: calc(100% + 6px); right: 0; min-width: 170px;
+            background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15); z-index: 500;
+            display: none; flex-direction: column; overflow: hidden; padding: 4px;
+        }
+
+        .export-dropdown.open { display: flex; }
+
+        .export-dropdown-item {
+            background: none; border: none; text-align: left; padding: 9px 12px;
+            font-size: 12.5px; color: var(--text-color); cursor: pointer; width: 100%;
+            box-sizing: border-box; border-radius: 5px; font-family: inherit;
+        }
+
+        .export-dropdown-item:hover { background-color: rgba(148, 163, 184, 0.12); }
+
+        .confirm-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+            display: none; align-items: center; justify-content: center; z-index: 20000;
+        }
+
+        .confirm-modal-overlay.open { display: flex; }
+
+        .confirm-modal-box {
+            background: var(--panel-bg); color: var(--text-color);
+            border: 1px solid var(--panel-border); border-radius: 12px;
+            padding: 22px 24px; width: 320px; max-width: 90vw; box-sizing: border-box;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+        }
+
+        .confirm-modal-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+        .confirm-modal-message { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+
+        .confirm-modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .confirm-modal-actions .btn { width: auto; padding: 8px 18px; }
+
         .port-tooltip {
             position: fixed; background: rgba(15, 23, 42, 0.95); color: #ffffff;
             padding: 6px 10px; border-radius: 4px; font-size: 10px; pointer-events: none;
@@ -616,7 +743,10 @@
             padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: bold;
             box-shadow: 0 10px 25px rgba(0, 85, 255, 0.3); display: none; z-index: 10000;
             animation: slideUp 0.2s ease-out;
+            opacity: 1; transition: opacity 0.3s ease-out;
         }
+
+        .cable-toast.fading { opacity: 0; }
 
         @keyframes slideUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     </style>
@@ -625,11 +755,19 @@
 
     <header>
         <div>
-            <h1>UniFi 10-Inch Matte White Rack Simulator</h1>
-            <div class="subtitle">UniFi Matte White Customizable Rack & Bracket Simulator (PRO)</div>
+            <h1>10-Inch Home Lab Rack Generator</h1>
+            <div class="subtitle">Customizable Rack & Network Cabling</div>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
-            <button id="btn-dark-mode" class="btn" style="width:auto; border-radius:20px;">🌙 Dark Mode</button>
+            <div class="export-menu-wrapper">
+                <button id="btn-export-menu" class="btn" style="width:auto; border-radius:20px;">Export ▾</button>
+                <div id="export-dropdown" class="export-dropdown">
+                    <button id="export-png-option" class="export-dropdown-item">📸 Export PNG</button>
+                    <button id="export-text-option" class="export-dropdown-item">📄 Export Text</button>
+                </div>
+            </div>
+            <button id="btn-clear-header" class="btn" style="width:auto; border-radius:20px;">⚠️Clear</button>
+            <button id="btn-dark-mode" class="btn" style="width:auto; border-radius:20px;">🌙</button>
         </div>
     </header>
 
@@ -637,7 +775,7 @@
         
         <div class="panel sidebar" id="sidebar">
             <div class="panel-title">Available Device Library</div>
-            <input type="text" id="search-sidebar" class="search-input" placeholder="🔍 Search device name or model (e.g., NVIDIA DGX Spark, Dell, DeskPi, HDD Cage)...">
+            <input type="text" id="search-sidebar" class="search-input" placeholder="🔍 Search device name or model (e.g., NVIDIA DGX Spark, Dell, Raspberry Pi, HDD Cage)...">
             <div id="sidebar-categories"></div>
         </div>
 
@@ -720,6 +858,9 @@
                         <span>🔵 Standard / PoE:</span> <strong id="cnt-std" class="text-blue">0</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
+                        <span>🟣 2.5G Ethernet:</span> <strong id="cnt-25g" style="color: var(--accent-25g);">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
                         <span>🟠 10G Copper Cable:</span> <strong id="cnt-10g" style="color: var(--accent-orange);">0</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
@@ -738,16 +879,12 @@
             </div>
 
             <div class="panel">
-                <div class="panel-title">Live Rack Assembly Status</div>
-                <div id="report-list" class="report-list"></div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">System Controls</div>
-                <div class="button-group">
-                    <button id="btn-export-png" class="btn btn-primary">📸 Export Rack PNG Screenshot</button>
-                    <button id="btn-export" class="btn">Copy Text Report</button>
-                    <button id="btn-clear" class="btn">Clear Entire Rack</button>
+                <div class="panel-title report-panel-title" id="report-panel-title" role="button" tabindex="0" aria-expanded="false">
+                    <span class="report-panel-title-text">Live Rack Assembly Status</span>
+                    <span id="report-state-indicator" class="report-state-indicator">▸</span>
+                </div>
+                <div id="report-list-wrapper" class="report-list-wrapper collapsed">
+                    <div id="report-list" class="report-list"></div>
                 </div>
             </div>
 
@@ -757,6 +894,17 @@
 
     <div id="global-tooltip" class="port-tooltip"></div>
     <div id="cable-toast" class="cable-toast"></div>
+
+    <div id="confirm-modal-overlay" class="confirm-modal-overlay">
+        <div class="confirm-modal-box">
+            <div id="confirm-modal-title" class="confirm-modal-title">Clear?</div>
+            <div id="confirm-modal-message" class="confirm-modal-message">Are you sure you want to clear the current rack &amp; cables?</div>
+            <div class="confirm-modal-actions">
+                <button id="confirm-modal-no" class="btn">No</button>
+                <button id="confirm-modal-yes" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
 
     <!--
         Device library data (DEVICE_TYPES, PORT_SPECS, PORT_MEDIA_TYPES, CATEGORIES)
@@ -837,7 +985,34 @@
                         chassis.innerHTML = `<div class="hdd-grid-3u">${colsHtml}</div>`; bracket.appendChild(chassis);
                     } else if (spec.layout === 'dell-optiplex') {
                         const chassis = document.createElement('div'); chassis.className = 'dell-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
-                        chassis.innerHTML = `<div class="dell-faceplate"><div class="dell-left-panel"><div class="dell-power-btn"><div class="power-icon"></div></div><div class="dell-jacks"><div class="dell-jack"></div><div class="dell-jack"></div></div><div class="dell-usb3"></div><div class="dell-usbc"></div><div class="dell-badge">OptiPlex</div></div><div class="dell-right-mesh"><div class="dell-logo-circle">DELL</div></div></div>`;
+
+                        const faceplate = document.createElement('div'); faceplate.className = 'dell-faceplate';
+
+                        const leftPanel = document.createElement('div'); leftPanel.className = 'dell-left-panel';
+                        const powerBtn = document.createElement('div'); powerBtn.className = 'dell-power-btn';
+                        const powerIcon = document.createElement('div'); powerIcon.className = 'power-icon';
+                        powerBtn.appendChild(powerIcon);
+
+                        const portsGroup = this.renderPorts(type, spec, startSubSlot);
+                        portsGroup.classList.add('dell-ports-group');
+
+                        const usb3 = document.createElement('div'); usb3.className = 'dell-usb3';
+                        const usbc = document.createElement('div'); usbc.className = 'dell-usbc';
+                        const badge = document.createElement('div'); badge.className = 'dell-badge'; badge.textContent = 'OptiPlex';
+
+                        leftPanel.appendChild(powerBtn);
+                        leftPanel.appendChild(portsGroup);
+                        leftPanel.appendChild(usb3);
+                        leftPanel.appendChild(usbc);
+                        leftPanel.appendChild(badge);
+
+                        const rightMesh = document.createElement('div'); rightMesh.className = 'dell-right-mesh';
+                        const logoCircle = document.createElement('div'); logoCircle.className = 'dell-logo-circle'; logoCircle.textContent = 'DELL';
+                        rightMesh.appendChild(logoCircle);
+
+                        faceplate.appendChild(leftPanel);
+                        faceplate.appendChild(rightMesh);
+                        chassis.appendChild(faceplate);
                         bracket.appendChild(chassis);
                     } else if (spec.layout === 'nvidia-dgx-spark') {
                         const chassis = document.createElement('div'); chassis.className = 'dgx-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
@@ -855,6 +1030,70 @@
                                 </div>
                             </div>`;
                         bracket.appendChild(chassis);
+                    } else if (spec.layout === 'mac-mini-m4') {
+                        const chassis = document.createElement('div'); chassis.className = 'macmini-chassis';
+                        const plate = document.createElement('div'); plate.className = 'macmini-top-plate';
+                        const logo = document.createElement('div'); logo.className = 'macmini-logo';
+                        plate.appendChild(logo);
+                        const label = document.createElement('div'); label.className = 'macmini-label'; label.textContent = 'Mac mini';
+                        const portStrip = document.createElement('div'); portStrip.className = 'macmini-port-strip';
+                        portStrip.appendChild(this.renderPorts(type, spec, startSubSlot));
+                        chassis.appendChild(plate); chassis.appendChild(label); chassis.appendChild(portStrip);
+                        bracket.appendChild(chassis);
+                    } else if (spec.layout === 'minisforum-nab9') {
+                        const chassis = document.createElement('div'); chassis.className = 'nab9-chassis';
+                        const vents = document.createElement('div'); vents.className = 'nab9-vent-block';
+                        const footer = document.createElement('div'); footer.className = 'nab9-footer';
+                        const badge = document.createElement('div'); badge.className = 'nab9-badge'; badge.textContent = 'MINISFORUM · NAB9';
+                        const status = document.createElement('div'); status.className = 'nab9-status';
+                        const led = document.createElement('div'); led.className = 'nab9-led';
+                        status.appendChild(led);
+                        status.appendChild(this.renderPorts(type, spec, startSubSlot));
+                        footer.appendChild(badge); footer.appendChild(status);
+                        chassis.appendChild(vents); chassis.appendChild(footer);
+                        bracket.appendChild(chassis);
+                    } else if (spec.layout === 'diy-matx-motherboard') {
+                        const chassis = document.createElement('div'); chassis.className = 'mobo-chassis';
+                        const topRow = document.createElement('div'); topRow.className = 'mobo-top-row';
+                        const cpu = document.createElement('div'); cpu.className = 'mobo-cpu-socket';
+                        const ram = document.createElement('div'); ram.className = 'mobo-ram-slots';
+                        for (let i = 0; i < 4; i++) { const stick = document.createElement('div'); stick.className = 'mobo-ram-stick'; ram.appendChild(stick); }
+                        topRow.appendChild(cpu); topRow.appendChild(ram);
+                        const pcieRow = document.createElement('div'); pcieRow.className = 'mobo-pcie-row';
+                        for (let i = 0; i < 3; i++) { const slot = document.createElement('div'); slot.className = 'mobo-pcie-slot'; pcieRow.appendChild(slot); }
+                        const footer = document.createElement('div'); footer.className = 'mobo-footer';
+                        const badge = document.createElement('div'); badge.className = 'mobo-badge'; badge.textContent = 'DIY mATX';
+                        footer.appendChild(badge);
+                        footer.appendChild(this.renderPorts(type, spec, startSubSlot));
+                        chassis.appendChild(topRow); chassis.appendChild(pcieRow); chassis.appendChild(footer);
+                        bracket.appendChild(chassis);
+                    } else if (spec.layout === 'raspberry-pi-cluster') {
+                        const chassis = document.createElement('div'); chassis.className = 'pi-cluster-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
+                        spec.ports.forEach((ptype, idx) => {
+                            const board = document.createElement('div'); board.className = 'pi-board';
+
+                            const gpioRow = document.createElement('div'); gpioRow.className = 'pi-gpio-row';
+                            for (let p = 0; p < 20; p++) { const pin = document.createElement('div'); pin.className = 'pi-gpio-pin'; gpioRow.appendChild(pin); }
+
+                            const soc = document.createElement('div'); soc.className = 'pi-soc';
+
+                            const usbRow = document.createElement('div'); usbRow.className = 'pi-usb-row';
+                            const usbA = document.createElement('div'); usbA.className = 'pi-usb-port blue';
+                            const usbB = document.createElement('div'); usbB.className = 'pi-usb-port';
+                            usbRow.appendChild(usbA); usbRow.appendChild(usbB);
+
+                            const footer = document.createElement('div'); footer.className = 'pi-footer';
+                            const badge = document.createElement('div'); badge.className = 'pi-badge'; badge.textContent = `Pi 4B #${idx + 1}`;
+                            const unit = document.createElement('div'); unit.className = 'switch-port-unit';
+                            const led = document.createElement('div'); led.className = 'led';
+                            const port = this.createRJ45(ptype, idx, startSubSlot, spec);
+                            unit.appendChild(led); unit.appendChild(port);
+                            footer.appendChild(badge); footer.appendChild(unit);
+
+                            board.appendChild(gpioRow); board.appendChild(soc); board.appendChild(usbRow); board.appendChild(footer);
+                            chassis.appendChild(board);
+                        });
+                        bracket.appendChild(chassis);
                     } else if (spec.layout === 'uck-g2-plus') {
                         const chassis = document.createElement('div'); chassis.className = 'uck-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
                         chassis.appendChild(this.renderPorts(type, spec, startSubSlot));
@@ -871,19 +1110,6 @@
                             const led = document.createElement('div'); led.className = 'led';
                             const port = this.createRJ45(ptype, idx, startSubSlot, spec);
                             unit.appendChild(led); unit.appendChild(port); bay.appendChild(unit); chassis.appendChild(bay);
-                        });
-                        bracket.appendChild(chassis);
-                    } else if (spec.layout === 'deskpi-dp0101' || spec.layout === 'deskpi-dp0059' || spec.layout === 'deskpi-dp0100') {
-                        const screenContainer = document.createElement('div'); screenContainer.className = 'deskpi-screen-container';
-                        screenContainer.innerHTML = `<div class="deskpi-hud-display"><div class="hud-gauge green">CPU<br>38%</div><div class="hud-gauge orange">TEMP<br>45°C</div><div class="hud-gauge purple">RAM<br>52%</div><div class="hud-gauge">FPS<br>60</div></div>`;
-                        bracket.appendChild(screenContainer);
-                    } else if (spec.layout === 'deskpi-dp0039' || spec.layout === 'deskpi-dp0046') {
-                        const chassis = document.createElement('div'); chassis.className = 'deskpi-chassis';
-                        spec.ports.forEach((ptype, idx) => {
-                            const bay = document.createElement('div'); bay.className = 'deskpi-pi-bay';
-                            const badge = document.createElement('span'); badge.className = 'pi-badge'; badge.textContent = `RPi 5 #${idx+1}`;
-                            const port = this.createRJ45(ptype, idx, startSubSlot, spec);
-                            bay.appendChild(badge); bay.appendChild(port); chassis.appendChild(bay);
                         });
                         bracket.appendChild(chassis);
                     } else {
@@ -1094,6 +1320,7 @@
         const App = {
             connections: [], draggedElement: null, isFromSidebar: false,
             maxU: 10, currentZoom: 1.0, redrawPending: false,
+            reportState: 'collapsed', reportHadDevices: false,
 
             init() {
                 this.renderSidebar();
@@ -1105,18 +1332,41 @@
 
                 const isDark = localStorage.getItem('unifi_rack_sim_dark') === 'true';
                 if (isDark) document.body.classList.add('dark-mode');
+                this.updateDarkModeButton();
 
                 this.loadFromStorage();
+                this.updateReport();
+            },
+
+            updateDarkModeButton() {
+                const btn = document.getElementById('btn-dark-mode');
+                if (btn) btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
             },
 
             renderSidebar() {
                 const catContainer = document.getElementById('sidebar-categories');
                 catContainer.innerHTML = '';
-                
+
+                this.loadCollapsedCategories();
+
                 CATEGORIES.forEach(cat => {
+                    const catKey = this.categoryKey(cat.title);
+
                     const block = document.createElement('div');
                     block.className = 'sidebar-category';
-                    block.innerHTML = `<div class="category-title">${cat.title}</div>`;
+                    block.setAttribute('data-category-key', catKey);
+                    if (this.collapsedCategories.has(catKey)) block.classList.add('collapsed');
+
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'category-title';
+                    titleEl.setAttribute('role', 'button');
+                    titleEl.setAttribute('tabindex', '0');
+                    titleEl.setAttribute('aria-expanded', this.collapsedCategories.has(catKey) ? 'false' : 'true');
+                    titleEl.innerHTML = `<span class="category-title-text">${cat.title}</span><span class="category-chevron">▾</span>`;
+                    block.appendChild(titleEl);
+
+                    const itemsWrap = document.createElement('div');
+                    itemsWrap.className = 'category-items';
 
                     cat.types.forEach(type => {
                         const card = document.createElement('div');
@@ -1138,8 +1388,17 @@
                         });
                         card.addEventListener('dragend', () => card.classList.remove('dragging'));
 
-                        block.appendChild(card);
+                        itemsWrap.appendChild(card);
                     });
+
+                    block.appendChild(itemsWrap);
+
+                    const toggle = () => this.toggleCategory(block, catKey, titleEl);
+                    titleEl.addEventListener('click', toggle);
+                    titleEl.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+                    });
+
                     catContainer.appendChild(block);
                 });
 
@@ -1154,8 +1413,47 @@
                     document.querySelectorAll('.sidebar-category').forEach(cat => {
                         const hasVisible = Array.from(cat.querySelectorAll('.device-card')).some(c => c.style.display !== 'none');
                         cat.style.display = hasVisible ? 'block' : 'none';
+                        // Searching should reveal matches even inside a collapsed category.
+                        if (query) cat.classList.remove('collapsed');
+                        else if (this.collapsedCategories.has(cat.getAttribute('data-category-key'))) cat.classList.add('collapsed');
                     });
                 });
+            },
+
+            categoryKey(title) {
+                return title.replace(/[^\w]+/g, '_').toLowerCase();
+            },
+
+            toggleCategory(block, catKey, titleEl) {
+                const isCollapsed = block.classList.toggle('collapsed');
+                titleEl.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+
+                if (isCollapsed) this.collapsedCategories.add(catKey);
+                else this.collapsedCategories.delete(catKey);
+
+                this.saveCollapsedCategories();
+            },
+
+            loadCollapsedCategories() {
+                if (this.collapsedCategories) return;
+                this.collapsedCategories = new Set();
+
+                let raw = null;
+                try { raw = localStorage.getItem('unifi_rack_sim_collapsed_categories'); } catch (e) {}
+
+                if (raw !== null) {
+                    // A saved preference exists (even an empty array = "user expanded everything") — honor it.
+                    try { JSON.parse(raw).forEach(key => this.collapsedCategories.add(key)); } catch (e) {}
+                } else {
+                    // First-ever load: default every category to collapsed.
+                    CATEGORIES.forEach(cat => this.collapsedCategories.add(this.categoryKey(cat.title)));
+                }
+            },
+
+            saveCollapsedCategories() {
+                try {
+                    localStorage.setItem('unifi_rack_sim_collapsed_categories', JSON.stringify(Array.from(this.collapsedCategories)));
+                } catch (e) {}
             },
 
             renderSlots() {
@@ -1245,7 +1543,7 @@
                             const uHeight = DEVICE_TYPES[type].uHeight || 1;
 
                             if (!this.canPlaceDevice(startSubSlot, uHeight)) {
-                                Toast.show(`❌ Cannot place: Not enough continuous 0.5U space below!`);
+                                Toast.show(`❌ Cannot place: Not enough continuous 0.5U space below!`, 2500);
                                 return;
                             }
 
@@ -1256,7 +1554,7 @@
                             const uHeight = DEVICE_TYPES[type].uHeight || 1;
 
                             if (!this.canPlaceDevice(startSubSlot, uHeight, this.draggedElement)) {
-                                Toast.show(`❌ Cannot move: Not enough space available at target position!`);
+                                Toast.show(`❌ Cannot move: Not enough space available at target position!`, 2500);
                                 return;
                             }
 
@@ -1308,20 +1606,52 @@
                 document.getElementById('btn-zoom-out').addEventListener('click', () => { if (this.currentZoom > 0.6) { this.currentZoom -= 0.1; this.applyZoom(); } });
                 document.getElementById('btn-zoom-reset').addEventListener('click', () => { this.currentZoom = 1.0; this.applyZoom(); });
 
+                const reportTitle = document.getElementById('report-panel-title');
+                const cycleReportState = () => {
+                    const order = ['collapsed', 'populated', 'all'];
+                    const nextIndex = (order.indexOf(this.reportState) + 1) % order.length;
+                    this.reportState = order[nextIndex];
+                    this.updateReport();
+                };
+                reportTitle.addEventListener('click', cycleReportState);
+                reportTitle.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cycleReportState(); }
+                });
+
                 document.getElementById('btn-dark-mode').addEventListener('click', () => {
                     document.body.classList.toggle('dark-mode');
                     localStorage.setItem('unifi_rack_sim_dark', document.body.classList.contains('dark-mode'));
+                    this.updateDarkModeButton();
                 });
 
-                document.getElementById('btn-clear').addEventListener('click', () => {
-                    if (confirm('Are you sure you want to clear the entire rack?')) {
-                        document.querySelectorAll('.sub-slot-row .device').forEach(d => d.remove());
-                        this.connections = []; this.update();
+                document.getElementById('btn-clear-header').addEventListener('click', async () => {
+                    const confirmed = await this.confirmModal('Clear?', 'Are you sure you want to clear the current rack & cables?');
+                    if (confirmed) this.clearRack();
+                });
+
+                const exportMenuBtn = document.getElementById('btn-export-menu');
+                const exportDropdown = document.getElementById('export-dropdown');
+
+                exportMenuBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    exportDropdown.classList.toggle('open');
+                });
+
+                document.getElementById('export-png-option').addEventListener('click', () => {
+                    exportDropdown.classList.remove('open');
+                    this.exportPNG();
+                });
+
+                document.getElementById('export-text-option').addEventListener('click', () => {
+                    exportDropdown.classList.remove('open');
+                    this.exportTextFile();
+                });
+
+                document.addEventListener('click', e => {
+                    if (!exportDropdown.contains(e.target) && e.target !== exportMenuBtn) {
+                        exportDropdown.classList.remove('open');
                     }
                 });
-
-                document.getElementById('btn-export-png').addEventListener('click', () => this.exportPNG());
-                document.getElementById('btn-export').addEventListener('click', () => this.exportReport());
             },
 
             applyZoom() {
@@ -1346,6 +1676,40 @@
                     this.connections = this.connections.filter(c => c.from !== pid && c.to !== pid);
                 });
                 device.remove(); this.update();
+            },
+
+            clearRack() {
+                document.querySelectorAll('.sub-slot-row .device').forEach(d => d.remove());
+                this.connections = [];
+                this.update();
+            },
+
+            confirmModal(title, message) {
+                return new Promise(resolve => {
+                    const overlay = document.getElementById('confirm-modal-overlay');
+                    document.getElementById('confirm-modal-title').textContent = title;
+                    document.getElementById('confirm-modal-message').textContent = message;
+
+                    const yesBtn = document.getElementById('confirm-modal-yes');
+                    const noBtn = document.getElementById('confirm-modal-no');
+
+                    const cleanup = result => {
+                        overlay.classList.remove('open');
+                        yesBtn.removeEventListener('click', onYes);
+                        noBtn.removeEventListener('click', onNo);
+                        overlay.removeEventListener('click', onOverlayClick);
+                        resolve(result);
+                    };
+                    const onYes = () => cleanup(true);
+                    const onNo = () => cleanup(false);
+                    const onOverlayClick = e => { if (e.target === overlay) cleanup(false); };
+
+                    yesBtn.addEventListener('click', onYes);
+                    noBtn.addEventListener('click', onNo);
+                    overlay.addEventListener('click', onOverlayClick);
+
+                    overlay.classList.add('open');
+                });
             },
 
             update() {
@@ -1378,7 +1742,7 @@
                 svg.querySelectorAll('path').forEach(p => p.remove());
                 document.querySelectorAll('.sub-slot-row .led').forEach(led => led.className = 'led');
 
-                let stdCount = 0, xgCount = 0, wanCount = 0, sfpCount = 0, patchCount = 0, conflictCount = 0;
+                let stdCount = 0, twoFiveGCount = 0, xgCount = 0, wanCount = 0, sfpCount = 0, patchCount = 0, conflictCount = 0;
 
                 this.connections.forEach((c, index) => {
                     const portA = document.querySelector(`[data-port-id="${c.from}"]`);
@@ -1418,6 +1782,8 @@
                         cableColor = 'var(--accent-red)'; wanCount++;
                     } else if (ptypeA && ptypeA.includes('10g') || ptypeB && ptypeB.includes('10g')) {
                         cableColor = 'var(--accent-orange)'; xgCount++;
+                    } else if (ptypeA && ptypeA.includes('2.5g') || ptypeB && ptypeB.includes('2.5g')) {
+                        cableColor = 'var(--accent-25g)'; twoFiveGCount++;
                     } else if (portA.closest('.device') && portB.closest('.device') &&
                                portA.closest('.device').getAttribute('data-type').includes('patch') &&
                                portB.closest('.device').getAttribute('data-type').includes('patch')) {
@@ -1441,6 +1807,7 @@
 
                 document.getElementById('cable-count-badge').textContent = this.connections.length;
                 document.getElementById('cnt-std').textContent = stdCount;
+                document.getElementById('cnt-25g').textContent = twoFiveGCount;
                 document.getElementById('cnt-10g').textContent = xgCount;
                 document.getElementById('cnt-wan').textContent = wanCount;
                 document.getElementById('cnt-sfp').textContent = sfpCount;
@@ -1477,24 +1844,65 @@
                 container.innerHTML = '';
                 const totalSubSlots = this.maxU * 2;
 
+                const slots = [];
                 for (let sub = totalSubSlots; sub >= 1; sub--) {
                     const row = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"]`);
                     const dev = row ? row.querySelector('.device.placed') : null;
-                    const uNum = Math.ceil(sub / 2);
-                    const posName = sub % 2 === 0 ? 'Top' : 'Bot';
-
-                    const item = document.createElement('div');
-                    item.className = 'report-item';
-
-                    if (dev) {
-                        item.classList.add('occupied');
-                        const spec = DEVICE_TYPES[dev.getAttribute('data-type')];
-                        item.innerHTML = `<span class="u-badge">U${uNum} ${posName}</span><span class="text-blue" style="text-align:right;">${spec.name}</span>`;
-                    } else {
-                        item.innerHTML = `<span class="u-badge text-muted">U${uNum} ${posName}</span><span class="text-muted">(Empty)</span>`;
-                    }
-                    container.appendChild(item);
+                    slots.push({ sub, dev });
                 }
+
+                const hasDevices = slots.some(s => s.dev);
+
+                // Auto-expand only the first time the rack goes from empty to populated
+                // (a "rising edge"), and only if the user hasn't already opened the panel.
+                // This nudges new users toward the populated view without fighting
+                // manual clicks afterward (including manually collapsing again later).
+                if (hasDevices && !this.reportHadDevices && this.reportState === 'collapsed') {
+                    this.reportState = 'populated';
+                }
+                this.reportHadDevices = hasDevices;
+
+                const itemsToShow = this.reportState === 'all' ? slots : slots.filter(s => s.dev);
+
+                if (itemsToShow.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'report-empty-message';
+                    empty.textContent = 'No devices installed yet.';
+                    container.appendChild(empty);
+                } else {
+                    itemsToShow.forEach(({ sub, dev }) => {
+                        const uNum = Math.ceil(sub / 2);
+                        const posName = sub % 2 === 0 ? 'Top' : 'Bot';
+
+                        const item = document.createElement('div');
+                        item.className = 'report-item';
+
+                        if (dev) {
+                            item.classList.add('occupied');
+                            const spec = DEVICE_TYPES[dev.getAttribute('data-type')];
+                            item.innerHTML = `<span class="u-badge">U${uNum} ${posName}</span><span class="text-blue" style="text-align:right;">${spec.name}</span>`;
+                        } else {
+                            item.innerHTML = `<span class="u-badge text-muted">U${uNum} ${posName}</span><span class="text-muted">(Empty)</span>`;
+                        }
+                        container.appendChild(item);
+                    });
+                }
+
+                this.applyReportState();
+            },
+
+            applyReportState() {
+                const wrapper = document.getElementById('report-list-wrapper');
+                const titleEl = document.getElementById('report-panel-title');
+                const indicator = document.getElementById('report-state-indicator');
+
+                const collapsed = this.reportState === 'collapsed';
+                wrapper.classList.toggle('collapsed', collapsed);
+                titleEl.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+
+                if (this.reportState === 'collapsed') indicator.textContent = '▸';
+                else if (this.reportState === 'populated') indicator.textContent = '▾ Populated Only';
+                else indicator.textContent = '▾ All Slots';
             },
 
             getRackState() {
@@ -1548,12 +1956,11 @@
 
             exportPNG() {
                 const target = document.getElementById('rack-wrapper');
-                const btn = document.getElementById('btn-export-png');
+                const btn = document.getElementById('export-png-option');
                 if (!target) return;
 
-                const originalText = btn.textContent;
-                btn.textContent = '⏳ Generating Screenshot...';
-                btn.disabled = true;
+                const originalText = btn ? btn.textContent : null;
+                if (btn) { btn.textContent = '⏳ Generating Screenshot...'; btn.disabled = true; }
 
                 document.querySelectorAll('.device.placed.selected').forEach(d => d.classList.remove('selected'));
                 const savedTransform = target.style.transform;
@@ -1580,17 +1987,35 @@
                 }).finally(() => {
                     target.style.transform = savedTransform;
                     cabinet.style.boxShadow = savedShadow;
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    if (btn) { btn.textContent = originalText; btn.disabled = false; }
                 });
             },
 
-            exportReport() {
-                let report = `============ UniFi 10-Inch Matte White Rack Assembly Report (${this.maxU}U) ============\n`;
+            buildReportText() {
+                let report = `============ 10-Inch Home Lab Rack Assembly Report (${this.maxU}U) ============\n`;
                 this.getRackState().forEach(r => {
                     report += `[SubSlot ${r.startSubSlot}] - ${DEVICE_TYPES[r.type].name}\n`;
                 });
+                return report;
+            },
+
+            exportReport() {
+                const report = this.buildReportText();
                 navigator.clipboard.writeText(report).then(() => alert('Report copied successfully!'));
+            },
+
+            exportTextFile() {
+                const report = this.buildReportText();
+                const blob = new Blob([report], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                const dateStr = new Date().toISOString().slice(0, 10);
+                link.download = `Rack-Report-${dateStr}.txt`;
+                link.href = url;
+                link.click();
+
+                URL.revokeObjectURL(url);
             }
         };
 
@@ -1626,11 +2051,30 @@
 
         const Toast = {
             el: document.getElementById('cable-toast'),
-            show(msg) {
-                this.el.textContent = msg; this.el.style.display = 'block';
+            hideTimeout: null,
+            show(msg, duration = null) {
+                clearTimeout(this.hideTimeout);
+                this.el.textContent = msg;
+                this.el.style.display = 'block';
+                this.el.classList.remove('fading');
                 this.el.style.left = `${(window.innerWidth - this.el.offsetWidth) / 2}px`;
+
+                if (duration) {
+                    this.hideTimeout = setTimeout(() => this.hide(), duration);
+                }
             },
-            hide() { this.el.style.display = 'none'; }
+            hide() {
+                clearTimeout(this.hideTimeout);
+                this.hideTimeout = null;
+                this.el.classList.add('fading');
+                // Wait for the fade-out transition to finish before removing it from layout.
+                setTimeout(() => {
+                    if (this.el.classList.contains('fading')) {
+                        this.el.style.display = 'none';
+                        this.el.classList.remove('fading');
+                    }
+                }, 300);
+            }
         };
 
         window.addEventListener('DOMContentLoaded', () => App.init());

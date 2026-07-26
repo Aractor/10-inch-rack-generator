@@ -22,10 +22,6 @@ const DEVICE_TYPES = {
     'blank': { name: '1U White Blank Panel', ports: [], uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
     'brush-panel': { name: '1U Brush Cable Management Panel', ports: [], uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
 
-    /* DeskPi 0.5U Devices */
-    'deskpi-dp0043': { name: 'DeskPi 0.5U Brush Cable Entry Panel (DP-0043)', ports: [], uHeight: 0.5, tdp: 0, poeBudget: 0, heatWeight: 0 },
-    'deskpi-dp0034': { name: 'DeskPi Rackmate 0.5U 12-Port CAT6 Patch Panel (DP-0034)', ports: Array(12).fill('patch'), uHeight: 0.5, tdp: 0, poeBudget: 0, heatWeight: 0 },
-
     'patch-8': { name: '8-Port White Patch Panel', ports: Array(8).fill('patch'), uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
     'patch-12': { name: '12-Port White Patch Panel', ports: Array(12).fill('patch'), uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
 
@@ -50,17 +46,14 @@ const DEVICE_TYPES = {
     'uck-g2-plus': { name: 'CloudKey Gen2 Plus (UCK-G2-PLUS w/ 3D Bracket)', ports: ['poe-gbe'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 140, layout: 'uck-g2-plus', tdp: 10, poeBudget: 0, heatWeight: 2, poeIn: true },
     'unvr-instant': { name: 'Network Video Recorder Instant (UNVR-Instant w/ 3D Bracket)', ports: [...Array(6).fill('poe'), 'gbe'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 250, layout: 'unvr-instant', tdp: 25, poeBudget: 45, heatWeight: 3 },
     'rapidanalysis-xerxes-6x': { name: 'Rapid Analysis Xerxes Pi 6x Blade Cluster (1U 3D Rack)', ports: Array(6).fill('poe-gbe'), uHeight: 1, bracket: true, bracketWidth: 270, layout: 'rapidanalysis-xerxes', tdp: 45, poeBudget: 0, heatWeight: 3 },
+    'raspberry-pi-4b-2x': { name: '2x Raspberry Pi 4B Side-by-Side Cluster (1U 3D Mount)', ports: ['poe', 'poe'], uHeight: 1, bracket: true, bracketWidth: 270, layout: 'raspberry-pi-cluster', tdp: 15, poeBudget: 0, heatWeight: 2 },
 
     /* Servers & Mini PCs */
-    'dell-optiplex-micro': { name: 'Dell OptiPlex 10" 3D Adapter Host', ports: [], uHeight: 1, bracket: true, bracketWidth: 235, layout: 'dell-optiplex', tdp: 35, poeBudget: 0, heatWeight: 4 },
+    'dell-optiplex-micro': { name: 'Dell OptiPlex Micro PC (1U 3D Mount)', ports: ['poe', '2.5g'], uHeight: 1, bracket: true, bracketWidth: 235, layout: 'dell-optiplex', tdp: 35, poeBudget: 0, heatWeight: 4 },
     'nvidia-dgx-spark': { name: 'NVIDIA DGX Spark Grace Blackwell (2U 10" 3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'nvidia-dgx-spark', tdp: 240, poeBudget: 0, heatWeight: 8 },
-
-    /* DeskPi Products */
-    'deskpi-dp0039': { name: 'DeskPi 1U 2x Pi 5 NVMe Mount (DP-0039)', ports: ['gbe', 'gbe'], uHeight: 1, bracket: true, bracketWidth: 260, layout: 'deskpi-dp0039', tdp: 15, poeBudget: 0, heatWeight: 2 },
-    'deskpi-dp0046': { name: 'DeskPi 2U 4x Pi 5 NVMe Mount (DP-0046)', ports: ['gbe', 'gbe', 'gbe', 'gbe'], uHeight: 2, bracket: true, bracketWidth: 260, layout: 'deskpi-dp0046', tdp: 30, poeBudget: 0, heatWeight: 4 },
-    'deskpi-dp0101': { name: 'DeskPi 6.91" 1U Touch Screen (DP-0101)', ports: [], uHeight: 1, bracket: true, bracketWidth: 270, layout: 'deskpi-dp0101', tdp: 5, poeBudget: 0, heatWeight: 1 },
-    'deskpi-dp0059': { name: 'DeskPi 7.84" 2U Touch Screen (DP-0059)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'deskpi-dp0059', tdp: 8, poeBudget: 0, heatWeight: 1 },
-    'deskpi-dp0100': { name: 'DeskPi 9" 3U Touch Screen (DP-0100)', ports: [], uHeight: 3, bracket: true, bracketWidth: 270, layout: 'deskpi-dp0100', tdp: 12, poeBudget: 0, heatWeight: 2 }
+    'apple-mac-mini-m4': { name: 'Apple Mac Mini M4 (3U 10" 3D Mount)', ports: ['10g'], uHeight: 3, bracket: true, bracketWidth: 220, layout: 'mac-mini-m4', tdp: 20, poeBudget: 0, heatWeight: 2 },
+    'minisforum-nab9': { name: 'Minisforum NAB9 (2U 10" 3D Mount)', ports: ['poe'], uHeight: 2, bracket: true, bracketWidth: 220, layout: 'minisforum-nab9', tdp: 28, poeBudget: 0, heatWeight: 3 },
+    'diy-matx-motherboard': { name: 'DIY Micro ATX Motherboard (3U 3D Mount)', ports: ['poe'], uHeight: 3, bracket: true, bracketWidth: 260, layout: 'diy-matx-motherboard', tdp: 65, poeBudget: 0, heatWeight: 5 }
 };
 
 const PORT_SPECS = {
@@ -84,12 +77,12 @@ const PORT_MEDIA_TYPES = {
 };
 
 const CATEGORIES = [
-    { title: '📂 0.5U & 1U Cable Management Panels', types: ['blank', 'brush-panel', 'deskpi-dp0043'] },
-    { title: '🔌 Patch Panels', types: ['deskpi-dp0034', 'patch-8', 'patch-12'] },
+    { title: '📂 0.5U & 1U Cable Management Panels', types: ['blank', 'brush-panel'] },
+    { title: '🔌 Patch Panels', types: ['patch-8', 'patch-12'] },
     { title: '💾 10" Hot-Swap HDD Storage Cages (3D Mount)', types: ['hdd-cage-1u-2x', 'hdd-cage-2u-6x', 'hdd-cage-3u-7x'] },
     { title: '⚡ UniFi Network Switches', types: ['usw-pro-xg-8-poe', 'usw-lite-16-poe', 'usw-lite-8-poe', 'usw-flex-2.5g-8-poe', 'usw-flex-2.5g-8', 'usw-flex-2.5g-5', 'usw-flex-mini', 'usw-flex', 'usw-flex-xg'] },
     { title: '🌐 Routers & Gateways', types: ['ucg-max', 'ucg-ultra', 'ucg-fiber', 'ux7'] },
     { title: '📹 UniFi Consoles & Protect NVR', types: ['uck-g2-plus', 'unvr-instant'] },
-    { title: '🍓 Cluster & Blade Racks (Rapid Analysis / DeskPi)', types: ['rapidanalysis-xerxes-6x', 'deskpi-dp0039', 'deskpi-dp0046', 'deskpi-dp0101', 'deskpi-dp0059', 'deskpi-dp0100'] },
-    { title: '💻 Servers, Mini PCs & AI (Dell / NVIDIA)', types: ['dell-optiplex-micro', 'nvidia-dgx-spark'] }
+    { title: '🍓 Cluster & Blade Racks (Rapid Analysis)', types: ['rapidanalysis-xerxes-6x', 'raspberry-pi-4b-2x'] },
+    { title: '💻 Servers, Mini PCs & AI (Dell / NVIDIA)', types: ['dell-optiplex-micro', 'nvidia-dgx-spark', 'apple-mac-mini-m4', 'minisforum-nab9', 'diy-matx-motherboard'] }
 ];
