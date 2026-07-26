@@ -626,6 +626,13 @@
         .port-rj45::before { content: ''; position: absolute; top: -6px; bottom: -6px; left: -6px; right: -6px; z-index: 1; }
         .port-rj45::after { content: ''; position: absolute; bottom: 0px; left: 2px; right: 2px; height: 2px; background: #1e293b; }
 
+        .port-note-dot {
+            position: absolute; top: -2px; right: -2px; width: 4px; height: 4px;
+            background: #fbbf24; border-radius: 50%; box-shadow: 0 0 3px rgba(251, 191, 36, 0.9);
+            display: none; z-index: 3; pointer-events: none;
+        }
+        .port-rj45[data-note]:not([data-note=""]) .port-note-dot { display: block; }
+
         .port-rj45:hover { border-color: var(--accent-blue) !important; box-shadow: 0 0 8px rgba(0, 85, 255, 0.6); transform: scale(1.2); z-index: 10; }
         .port-rj45.port-selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 10px var(--accent-blue), inset 0 0 3px var(--accent-blue) !important; transform: scale(1.2); z-index: 10; animation: portPulse 1s infinite alternate; }
 
@@ -751,6 +758,14 @@
         .confirm-modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
         .confirm-modal-actions .btn { width: auto; padding: 8px 18px; }
 
+        .note-modal-input {
+            width: 100%; box-sizing: border-box; padding: 9px 11px; margin-bottom: 18px;
+            border: 1px solid var(--panel-border); border-radius: 6px; background: var(--bg-color);
+            color: var(--text-color); font-size: 13px; font-family: inherit; outline: none;
+        }
+        .note-modal-input:focus { border-color: var(--accent-blue); box-shadow: var(--focus-ring); }
+        .note-modal-hint { font-size: 11px; color: var(--text-muted); margin-top: -12px; margin-bottom: 14px; }
+
         .port-tooltip {
             position: fixed; background: rgba(15, 23, 42, 0.95); color: #ffffff;
             padding: 6px 10px; border-radius: 4px; font-size: 10px; pointer-events: none;
@@ -759,6 +774,12 @@
         }
 
         .port-tooltip.tooltip-bottom { transform: translate(-50%, 0); margin-top: 8px; }
+
+        .port-tooltip-note {
+            white-space: normal; max-width: 200px; margin-top: 5px; padding-top: 5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15); color: #fbbf24; font-style: italic;
+            word-break: break-word;
+        }
 
         .cable-toast {
             position: fixed; bottom: 20px; background: var(--accent-blue); color: #ffffff;
@@ -924,6 +945,19 @@
             <div class="confirm-modal-actions">
                 <button id="confirm-modal-no" class="btn">No</button>
                 <button id="confirm-modal-yes" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="note-modal-overlay" class="confirm-modal-overlay">
+        <div class="confirm-modal-box">
+            <div class="confirm-modal-title">Port Note</div>
+            <div id="note-modal-port-label" class="confirm-modal-message">Port</div>
+            <input type="text" id="note-modal-input" class="note-modal-input" maxlength="120" placeholder="e.g. Uplink to office switch">
+            <div class="note-modal-hint">Plain text only — non-ASCII characters are removed automatically.</div>
+            <div class="confirm-modal-actions">
+                <button id="note-modal-cancel" class="btn">Cancel</button>
+                <button id="note-modal-save" class="btn btn-primary">Save</button>
             </div>
         </div>
     </div>
@@ -1236,9 +1270,13 @@
                     port.dataset.portId = `sub${startSubSlot}-p${idx}`;
                 }
 
-                port.addEventListener('mouseenter', e => Tooltip.show(e, ptype, startSubSlot, idx));
+                const noteDot = document.createElement('span');
+                noteDot.className = 'port-note-dot';
+                port.appendChild(noteDot);
+
+                port.addEventListener('mouseenter', e => Tooltip.show(e, ptype, startSubSlot, idx, port));
                 port.addEventListener('mouseleave', () => Tooltip.hide());
-                port.addEventListener('focus', e => Tooltip.show(e, ptype, startSubSlot, idx));
+                port.addEventListener('focus', e => Tooltip.show(e, ptype, startSubSlot, idx, port));
                 port.addEventListener('blur', () => Tooltip.hide());
 
                 return port;
@@ -1289,6 +1327,13 @@
                     if (!this.dragStartPort) return;
                     const targetPort = e.target.closest('.port-rj45');
                     this.endConnection(targetPort);
+                });
+
+                document.addEventListener('contextmenu', e => {
+                    const port = e.target.closest('.port-rj45');
+                    if (!port || !port.closest('.sub-slot-row') || !port.dataset.portId) return;
+                    e.preventDefault();
+                    App.promptPortNote(port);
                 });
             },
 
@@ -1814,6 +1859,57 @@
                 });
             },
 
+            // Strips non-ASCII characters and trims/limits length so notes are always
+            // plain, safe text — never interpreted as HTML/markup when rendered.
+            sanitizeNoteText(text) {
+                if (!text) return '';
+                return text.replace(/[^\x00-\x7F]/g, '').trim().slice(0, 120);
+            },
+
+            promptPortNote(port) {
+                const overlay = document.getElementById('note-modal-overlay');
+                const input = document.getElementById('note-modal-input');
+                const portLabelEl = document.getElementById('note-modal-port-label');
+                const saveBtn = document.getElementById('note-modal-save');
+                const cancelBtn = document.getElementById('note-modal-cancel');
+
+                const portId = port.dataset.portId;
+                const ptype = this.getPortType(portId);
+                const ptitle = (PORT_SPECS[ptype] && PORT_SPECS[ptype].title) || 'Port';
+                portLabelEl.textContent = `${ptitle} — add a short note for this port.`;
+
+                input.value = port.dataset.note || '';
+                overlay.classList.add('open');
+                setTimeout(() => { input.focus(); input.select(); }, 0);
+
+                const cleanup = () => {
+                    overlay.classList.remove('open');
+                    saveBtn.removeEventListener('click', onSave);
+                    cancelBtn.removeEventListener('click', onCancel);
+                    overlay.removeEventListener('click', onOverlayClick);
+                    input.removeEventListener('keydown', onKeydown);
+                };
+
+                const onSave = () => {
+                    const sanitized = this.sanitizeNoteText(input.value);
+                    if (sanitized) port.dataset.note = sanitized;
+                    else delete port.dataset.note;
+                    cleanup();
+                    this.autoSave();
+                };
+                const onCancel = () => cleanup();
+                const onOverlayClick = e => { if (e.target === overlay) cleanup(); };
+                const onKeydown = e => {
+                    if (e.key === 'Enter') { e.preventDefault(); onSave(); }
+                    else if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+                };
+
+                saveBtn.addEventListener('click', onSave);
+                cancelBtn.addEventListener('click', onCancel);
+                overlay.addEventListener('click', onOverlayClick);
+                input.addEventListener('keydown', onKeydown);
+            },
+
             update() {
                 this.updateOccupiedSlots();
                 this.validateConnections();
@@ -2028,7 +2124,8 @@
                     if (dev) {
                         const type = dev.getAttribute('data-type');
                         const labels = Array.from(dev.querySelectorAll('.port-label')).map(inp => inp.value);
-                        layout.push({ startSubSlot: sub, type, labels });
+                        const notes = Array.from(dev.querySelectorAll('.port-rj45')).map(p => p.dataset.note || '');
+                        layout.push({ startSubSlot: sub, type, labels, notes });
                     }
                 }
                 return layout;
@@ -2048,6 +2145,12 @@
                         row.appendChild(dev);
                         if (item.labels) {
                             dev.querySelectorAll('.port-label').forEach((inp, idx) => inp.value = item.labels[idx] || '');
+                        }
+                        if (item.notes) {
+                            dev.querySelectorAll('.port-rj45').forEach((p, idx) => {
+                                const sanitized = this.sanitizeNoteText(item.notes[idx] || '');
+                                if (sanitized) p.dataset.note = sanitized;
+                            });
                         }
                     }
                 });
@@ -2134,7 +2237,7 @@
 
         const Tooltip = {
             el: document.getElementById('global-tooltip'),
-            show(e, ptype, startSubSlot, idx) {
+            show(e, ptype, startSubSlot, idx, port) {
                 const spec = PORT_SPECS[ptype];
                 if (!spec) return;
 
@@ -2142,6 +2245,18 @@
                 if (startSubSlot) text = `[SubSlot ${startSubSlot} - Port ${idx+1}]<br>` + text;
 
                 this.el.innerHTML = text;
+
+                // The note is user-entered text, so it's appended as its own element via
+                // textContent — never concatenated into the innerHTML string above — so it
+                // is always rendered as plain text and can never be interpreted as markup.
+                const note = port && port.dataset ? port.dataset.note : null;
+                if (note) {
+                    const noteEl = document.createElement('div');
+                    noteEl.className = 'port-tooltip-note';
+                    noteEl.textContent = `📝 ${note}`;
+                    this.el.appendChild(noteEl);
+                }
+
                 this.el.style.display = 'block';
 
                 const rect = e.target.getBoundingClientRect();
