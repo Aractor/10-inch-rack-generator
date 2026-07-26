@@ -1292,14 +1292,29 @@
                 });
             },
 
+            // Patch panel ports are physically wired through from front to back, so they
+            // support 2 simultaneous cables (one running to the "inside" of the rack, one
+            // running out to an external device). Every other port type stays at 1.
+            getPortMaxConnections(portId) {
+                return App.getPortType(portId) === 'patch' ? 2 : 1;
+            },
+
             startConnection(port) {
                 const portId = port.dataset.portId;
                 if (!portId) return;
 
-                const existIdx = App.connections.findIndex(c => c.from === portId || c.to === portId);
-                if (existIdx !== -1) {
-                    App.connections.splice(existIdx, 1);
-                    App.update();
+                const existing = App.connections.filter(c => c.from === portId || c.to === portId);
+                const maxConnections = this.getPortMaxConnections(portId);
+
+                if (existing.length >= maxConnections) {
+                    if (maxConnections === 1) {
+                        // Original behavior: clicking a connected single-cable port disconnects it.
+                        const idx = App.connections.indexOf(existing[0]);
+                        App.connections.splice(idx, 1);
+                        App.update();
+                    } else {
+                        Toast.show(`This port already has ${maxConnections} cables connected — click a cable to remove it first.`, 2500);
+                    }
                     return;
                 }
 
@@ -1351,8 +1366,19 @@
                 const toId = targetPort.dataset.portId;
                 if (!fromId || !toId) return;
 
-                const existIdx = App.connections.findIndex(c => c.from === toId || c.to === toId);
-                if (existIdx !== -1) App.connections.splice(existIdx, 1);
+                const maxTarget = this.getPortMaxConnections(toId);
+                const existingOnTarget = App.connections.filter(c => c.from === toId || c.to === toId);
+
+                if (existingOnTarget.length >= maxTarget) {
+                    if (maxTarget === 1) {
+                        // Original behavior: a single-cable port's existing connection gets replaced.
+                        const idx = App.connections.indexOf(existingOnTarget[0]);
+                        App.connections.splice(idx, 1);
+                    } else {
+                        Toast.show(`Target port already has ${maxTarget} cables connected.`, 2500);
+                        return;
+                    }
+                }
 
                 App.connections.push({ from: fromId, to: toId });
                 App.update();
@@ -1802,6 +1828,12 @@
                 );
             },
 
+            removeConnection(index) {
+                if (index < 0 || index >= this.connections.length) return;
+                this.connections.splice(index, 1);
+                this.update();
+            },
+
             requestRedraw() {
                 if (this.redrawPending) return;
                 this.redrawPending = true;
@@ -1876,7 +1908,12 @@
                     path.setAttribute('fill', 'none');
                     path.setAttribute('stroke-linecap', 'round');
                     path.setAttribute('filter', 'url(#cable-shadow)');
-                    
+
+                    path.addEventListener('click', e => {
+                        e.stopPropagation();
+                        this.removeConnection(index);
+                    });
+
                     svg.appendChild(path);
                     this.lightLED(portA); this.lightLED(portB);
                 });
