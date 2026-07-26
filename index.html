@@ -539,6 +539,22 @@
         .mobo-footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
         .mobo-badge { font-size: 6.5px; color: #bff5d2; letter-spacing: 0.4px; font-weight: 700; white-space: nowrap; }
 
+        /* JetKVM 3D Mount Styling */
+        .jetkvm-chassis {
+            width: 90%; height: 90%; box-sizing: border-box;
+            background: linear-gradient(160deg, #1c1c20 0%, #0c0c0f 100%);
+            border: 1px solid #000000; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            padding: 6px 4px; gap: 3px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.08), 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .jetkvm-top { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .jetkvm-logo-dot { width: 7px; height: 7px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+        .jetkvm-label { font-size: 6.5px; color: #e5e7eb; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .jetkvm-port-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .jetkvm-hdmi-port { width: 10px; height: 6px; background: #0a0a0c; border: 1px solid #3f3f46; border-radius: 1px; }
+        .jetkvm-usbc-port { width: 8px; height: 4px; background: #0a0a0c; border: 1px solid #3f3f46; border-radius: 2px; }
+
         /* 2x Raspberry Pi 4B Side-by-Side Cluster Styling */
         .pi-cluster-chassis { width: 100%; height: 90%; box-sizing: border-box; display: flex; gap: 5px; padding: 2px; }
         .pi-board {
@@ -1072,6 +1088,26 @@
                         footer.appendChild(badge);
                         footer.appendChild(this.renderPorts(type, spec, startSubSlot));
                         chassis.appendChild(topRow); chassis.appendChild(pcieRow); chassis.appendChild(footer);
+                        bracket.appendChild(chassis);
+                    } else if (spec.layout === 'jetkvm') {
+                        const chassis = document.createElement('div'); chassis.className = 'jetkvm-chassis';
+
+                        const top = document.createElement('div'); top.className = 'jetkvm-top';
+                        const dot = document.createElement('div'); dot.className = 'jetkvm-logo-dot';
+                        top.appendChild(dot);
+
+                        const label = document.createElement('div'); label.className = 'jetkvm-label'; label.textContent = 'JetKVM';
+
+                        const portRow = document.createElement('div'); portRow.className = 'jetkvm-port-row';
+                        const hdmi = document.createElement('div'); hdmi.className = 'jetkvm-hdmi-port';
+                        const usbc = document.createElement('div'); usbc.className = 'jetkvm-usbc-port';
+                        portRow.appendChild(hdmi);
+                        portRow.appendChild(usbc);
+                        portRow.appendChild(this.renderPorts(type, spec, startSubSlot));
+
+                        chassis.appendChild(top);
+                        chassis.appendChild(label);
+                        chassis.appendChild(portRow);
                         bracket.appendChild(chassis);
                     } else if (spec.layout === 'raspberry-pi-cluster') {
                         const chassis = document.createElement('div'); chassis.className = 'pi-cluster-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
