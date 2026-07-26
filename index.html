@@ -1688,6 +1688,16 @@
                     const spec = DEVICE_TYPES[type];
                     if (!spec) return;
 
+                    // Keep the device's own rendered height in sync with the current spec.
+                    // Without this, a device already placed before a uHeight change (e.g.
+                    // loaded from a saved rack) would keep its old, stale visual size forever
+                    // — even though the occupancy calc below always uses the current value —
+                    // making it visually overlap the slots it no longer actually reserves.
+                    const correctHeightPx = `${spec.uHeight * 48}px`;
+                    if (dev.style.height !== correctHeightPx) {
+                        dev.style.height = correctHeightPx;
+                    }
+
                     const subUnits = Math.round(spec.uHeight * 2);
                     for (let i = 0; i < subUnits; i++) {
                         const sub = startSub - i;
