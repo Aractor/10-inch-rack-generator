@@ -256,6 +256,13 @@
             box-shadow: inset 0 0 0 2px var(--accent-blue), var(--focus-ring);
         }
 
+        .device.placed.hover-glow {
+            box-shadow: 0 0 0 1.5px rgba(0, 85, 255, 0.65), 0 0 14px 3px rgba(0, 85, 255, 0.45);
+        }
+        .device.placed.hover-glow.selected {
+            box-shadow: inset 0 0 0 2px var(--accent-blue), var(--focus-ring), 0 0 14px 3px rgba(0, 85, 255, 0.45);
+        }
+
         .ear-l, .ear-r {
             width: 20px; height: 100%;
             background: linear-gradient(to bottom, #f1f5f9 0%, #cbd5e1 50%, #94a3b8 100%);
@@ -1474,7 +1481,19 @@
             },
 
             setupDeviceTooltip() {
+                this.hoveredDeviceEl = null;
+
                 document.addEventListener('mousemove', e => {
+                    const device = e.target.closest('.device.placed');
+
+                    // Glow tracking runs regardless of whether the cursor is over a port —
+                    // a port is still part of the device, so the outline should stay lit.
+                    if (device !== this.hoveredDeviceEl) {
+                        if (this.hoveredDeviceEl) this.hoveredDeviceEl.classList.remove('hover-glow');
+                        if (device) device.classList.add('hover-glow');
+                        this.hoveredDeviceEl = device;
+                    }
+
                     const port = e.target.closest('.port-rj45');
                     if (port && port.closest('.sub-slot-row')) {
                         // Over a port — its own mouseenter/mouseleave handlers manage the
@@ -1482,7 +1501,6 @@
                         return;
                     }
 
-                    const device = e.target.closest('.device.placed');
                     if (device) {
                         Tooltip.showDevice(e, device);
                     } else {
