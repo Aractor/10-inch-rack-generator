@@ -633,6 +633,13 @@
         }
         .port-rj45[data-note]:not([data-note=""]) .port-note-dot { display: block; }
 
+        .device-note-dot {
+            position: absolute; top: 3px; right: 3px; width: 6px; height: 6px;
+            background: #fbbf24; border-radius: 50%; box-shadow: 0 0 4px rgba(251, 191, 36, 0.9);
+            display: none; z-index: 30; pointer-events: none;
+        }
+        .device.placed[data-note]:not([data-note=""]) .device-note-dot { display: block; }
+
         .port-rj45:hover { border-color: var(--accent-blue) !important; box-shadow: 0 0 8px rgba(0, 85, 255, 0.6); transform: scale(1.2); z-index: 10; }
         .port-rj45.port-selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 10px var(--accent-blue), inset 0 0 3px var(--accent-blue) !important; transform: scale(1.2); z-index: 10; animation: portPulse 1s infinite alternate; }
 
@@ -951,8 +958,8 @@
 
     <div id="note-modal-overlay" class="confirm-modal-overlay">
         <div class="confirm-modal-box">
-            <div class="confirm-modal-title">Port Note</div>
-            <div id="note-modal-port-label" class="confirm-modal-message">Port</div>
+            <div id="note-modal-title" class="confirm-modal-title">Port Note</div>
+            <div id="note-modal-subtitle" class="confirm-modal-message">Port</div>
             <input type="text" id="note-modal-input" class="note-modal-input" maxlength="120" placeholder="e.g. Uplink to office switch">
             <div class="note-modal-hint">Plain text only — non-ASCII characters are removed automatically.</div>
             <div class="confirm-modal-actions">
@@ -1209,6 +1216,10 @@
                     dev.classList.add('placed');
                     dev.style.height = `${spec.uHeight * 48}px`;
                     this.setupPlacedActions(dev);
+
+                    const deviceNoteDot = document.createElement('span');
+                    deviceNoteDot.className = 'device-note-dot';
+                    dev.appendChild(deviceNoteDot);
                 }
 
                 return dev;
@@ -1331,9 +1342,17 @@
 
                 document.addEventListener('contextmenu', e => {
                     const port = e.target.closest('.port-rj45');
-                    if (!port || !port.closest('.sub-slot-row') || !port.dataset.portId) return;
-                    e.preventDefault();
-                    App.promptPortNote(port);
+                    if (port && port.closest('.sub-slot-row') && port.dataset.portId) {
+                        e.preventDefault();
+                        App.promptPortNote(port);
+                        return;
+                    }
+
+                    const device = e.target.closest('.device.placed');
+                    if (device) {
+                        e.preventDefault();
+                        App.promptDeviceNote(device);
+                    }
                 });
             },
 
@@ -1444,6 +1463,7 @@
                 this.setupGlobalControls();
 
                 document.addEventListener('dragend', () => this.clearDropHighlight());
+                this.setupDeviceTooltip();
 
                 const isDark = localStorage.getItem('unifi_rack_sim_dark') === 'true';
                 if (isDark) document.body.classList.add('dark-mode');
@@ -1451,6 +1471,24 @@
 
                 this.loadFromStorage();
                 this.updateReport();
+            },
+
+            setupDeviceTooltip() {
+                document.addEventListener('mousemove', e => {
+                    const port = e.target.closest('.port-rj45');
+                    if (port && port.closest('.sub-slot-row')) {
+                        // Over a port — its own mouseenter/mouseleave handlers manage the
+                        // tooltip, so stand down entirely to avoid the two conflicting.
+                        return;
+                    }
+
+                    const device = e.target.closest('.device.placed');
+                    if (device) {
+                        Tooltip.showDevice(e, device);
+                    } else {
+                        Tooltip.hide();
+                    }
+                });
             },
 
             updateDarkModeButton() {
@@ -1867,18 +1905,37 @@
             },
 
             promptPortNote(port) {
-                const overlay = document.getElementById('note-modal-overlay');
-                const input = document.getElementById('note-modal-input');
-                const portLabelEl = document.getElementById('note-modal-port-label');
-                const saveBtn = document.getElementById('note-modal-save');
-                const cancelBtn = document.getElementById('note-modal-cancel');
-
                 const portId = port.dataset.portId;
                 const ptype = this.getPortType(portId);
                 const ptitle = (PORT_SPECS[ptype] && PORT_SPECS[ptype].title) || 'Port';
-                portLabelEl.textContent = `${ptitle} — add a short note for this port.`;
+                this.promptNote(port, {
+                    title: 'Port Note',
+                    subtitle: `${ptitle} — add a short note for this port.`
+                });
+            },
 
-                input.value = port.dataset.note || '';
+            promptDeviceNote(device) {
+                const type = device.getAttribute('data-type');
+                const spec = DEVICE_TYPES[type];
+                const dname = (spec && spec.name) || 'Device';
+                this.promptNote(device, {
+                    title: 'Device Note',
+                    subtitle: `${dname} — add a short note for this device.`
+                });
+            },
+
+            promptNote(targetEl, { title, subtitle }) {
+                const overlay = document.getElementById('note-modal-overlay');
+                const input = document.getElementById('note-modal-input');
+                const titleEl = document.getElementById('note-modal-title');
+                const subtitleEl = document.getElementById('note-modal-subtitle');
+                const saveBtn = document.getElementById('note-modal-save');
+                const cancelBtn = document.getElementById('note-modal-cancel');
+
+                titleEl.textContent = title;
+                subtitleEl.textContent = subtitle;
+
+                input.value = targetEl.dataset.note || '';
                 overlay.classList.add('open');
                 setTimeout(() => { input.focus(); input.select(); }, 0);
 
@@ -1892,8 +1949,8 @@
 
                 const onSave = () => {
                     const sanitized = this.sanitizeNoteText(input.value);
-                    if (sanitized) port.dataset.note = sanitized;
-                    else delete port.dataset.note;
+                    if (sanitized) targetEl.dataset.note = sanitized;
+                    else delete targetEl.dataset.note;
                     cleanup();
                     this.autoSave();
                 };
@@ -2125,7 +2182,8 @@
                         const type = dev.getAttribute('data-type');
                         const labels = Array.from(dev.querySelectorAll('.port-label')).map(inp => inp.value);
                         const notes = Array.from(dev.querySelectorAll('.port-rj45')).map(p => p.dataset.note || '');
-                        layout.push({ startSubSlot: sub, type, labels, notes });
+                        const deviceNote = dev.dataset.note || '';
+                        layout.push({ startSubSlot: sub, type, labels, notes, deviceNote });
                     }
                 }
                 return layout;
@@ -2151,6 +2209,10 @@
                                 const sanitized = this.sanitizeNoteText(item.notes[idx] || '');
                                 if (sanitized) p.dataset.note = sanitized;
                             });
+                        }
+                        if (item.deviceNote) {
+                            const sanitized = this.sanitizeNoteText(item.deviceNote);
+                            if (sanitized) dev.dataset.note = sanitized;
                         }
                     }
                 });
@@ -2274,6 +2336,41 @@
                 left = Math.max(10, Math.min(window.innerWidth - 10, left));
                 this.el.style.left = `${left}px`;
             },
+
+            showDevice(e, device) {
+                const type = device.getAttribute('data-type');
+                const spec = DEVICE_TYPES[type];
+                if (!spec) return;
+
+                this.el.innerHTML = `<strong>${spec.name}</strong>`;
+
+                // Same plain-text-only rule as port notes: appended via textContent,
+                // never concatenated into the innerHTML string above.
+                const note = device.dataset ? device.dataset.note : null;
+                if (note) {
+                    const noteEl = document.createElement('div');
+                    noteEl.className = 'port-tooltip-note';
+                    noteEl.textContent = `📝 ${note}`;
+                    this.el.appendChild(noteEl);
+                }
+
+                this.el.style.display = 'block';
+
+                let left = e.clientX;
+                let top = e.clientY - 16;
+
+                if (top < 80) {
+                    this.el.classList.add('tooltip-bottom');
+                    this.el.style.top = `${e.clientY + 16}px`;
+                } else {
+                    this.el.classList.remove('tooltip-bottom');
+                    this.el.style.top = `${top}px`;
+                }
+
+                left = Math.max(10, Math.min(window.innerWidth - 10, left));
+                this.el.style.left = `${left}px`;
+            },
+
             hide() { this.el.style.display = 'none'; }
         };
 
