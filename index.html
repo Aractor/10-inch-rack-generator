@@ -3,327 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniFi 10-Inch Matte White Rack Simulator (PRO Edition)</title>
-    <!-- Include html2canvas for DOM/SVG rendering and PNG downloads -->
+    <title>DeskPi 10-Inch Rack Simulator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --bg-color: #f1f5f9; 
-            --panel-bg: #ffffff; 
-            --panel-border: #cbd5e1;
-            --text-color: #0f172a;
-            --text-muted: #64748b;
-            --accent-blue: #0055ff; /* UniFi PoE Classic Blue */
-            --accent-green: #10b981; /* Gigabit Green */
-            --accent-orange: #f97316; /* 10G Orange */
-            --accent-sfp: #00b4d8; /* SFP+ Light Blue */
-            --accent-red: #ef4444;
-            --rack-rail-color: #94a3b8;
-            --focus-ring: 0 0 0 3px rgba(0, 85, 255, 0.4);
-            --device-active-border: 2px solid var(--accent-blue);
+            --bg-color: #f1f5f9; --panel-bg: #ffffff; --panel-border: #cbd5e1;
+            --text-color: #0f172a; --text-muted: #64748b; --accent-blue: #0055ff;
+            --accent-green: #10b981; --accent-orange: #f97316; --accent-sfp: #00b4d8;
+            --accent-red: #ef4444; --focus-ring: 0 0 0 3px rgba(0, 85, 255, 0.4);
         }
-
         body.dark-mode {
-            --bg-color: #0f172a;
-            --panel-bg: #1e293b;
-            --panel-border: #334155;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --rack-rail-color: #475569;
-            --accent-sfp: #00f0ff; /* SFP+ Dark Mode Glow Effect */
+            --bg-color: #0f172a; --panel-bg: #1e293b; --panel-border: #334155;
+            --text-color: #f8fafc; --text-muted: #94a3b8; --accent-sfp: #00f0ff;
         }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg-color); color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; box-sizing: border-box; transition: background-color 0.3s, color 0.3s;
         }
-
-        header {
-            width: 100%;
-            max-width: 1280px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
+        header { width: 100%; max-width: 1280px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
         .subtitle { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
-
-        .workspace {
-            display: flex; gap: 25px; max-width: 1280px; width: 100%;
-            justify-content: center; align-items: flex-start; flex-wrap: wrap;
-        }
-
-        .panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px; padding: 18px; box-sizing: border-box;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .panel-title {
-            margin: 0 0 15px 0; font-size: 14px; font-weight: 600;
-            color: var(--text-color); border-bottom: 1px solid var(--panel-border);
-            padding-bottom: 8px; letter-spacing: 0.5px;
-        }
-
+        .workspace { display: flex; gap: 25px; max-width: 1280px; width: 100%; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
+        .panel { background-color: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; padding: 18px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); transition: background-color 0.3s, border-color 0.3s; }
+        .panel-title { margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: var(--text-color); border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; letter-spacing: 0.5px; }
         .sidebar { width: 380px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-
-        .search-input {
-            width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--panel-border);
-            background: var(--bg-color); color: var(--text-color); box-sizing: border-box;
-            font-size: 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-        }
+        .search-input { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--panel-border); background: var(--bg-color); color: var(--text-color); box-sizing: border-box; font-size: 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
         .search-input:focus { border-color: var(--accent-blue); box-shadow: var(--focus-ring); }
-
-        .sidebar-category {
-            border: 1px solid var(--panel-border); background: rgba(148, 163, 184, 0.05);
-            border-radius: 8px; padding: 12px; margin-bottom: 12px;
-        }
-
-        .category-title {
-            font-size: 12px; font-weight: bold; color: var(--accent-blue);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
-            border-bottom: 1px dashed var(--panel-border); padding-bottom: 4px;
-        }
-
-        .device-card {
-            background: var(--panel-bg); border: 1px solid var(--panel-border);
-            border-radius: 6px; margin-bottom: 10px; padding: 10px; cursor: grab;
-            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
+        .sidebar-category { border: 1px solid var(--panel-border); background: rgba(148, 163, 184, 0.05); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+        .category-title { font-size: 12px; font-weight: bold; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed var(--panel-border); padding-bottom: 4px; }
+        .device-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 6px; margin-bottom: 10px; padding: 10px; cursor: grab; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .device-card:hover { border-color: var(--text-muted); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-
         .device-card-title { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; font-weight: bold; }
         .device-card .device { height: 38px; }
         .device-card .device.u-05 { height: 22px; }
         .device-card .device.u-2 { height: 76px; }
         .device-card .device.u-3 { height: 114px; }
-
         .center-stage { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 400px; }
-
         .rack-wrapper-container { width: 100%; overflow: visible; display: flex; justify-content: center; padding: 40px 0; }
         .rack-wrapper { position: relative; width: 372px; transition: transform 0.15s ease-out; padding-top: 35px; }
-
-        #cable-svg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 100; overflow: visible;
-        }
-
-        svg path.cable-path {
-            pointer-events: visibleStroke; transition: stroke-width 0.2s, stroke 0.2s;
-            stroke-dasharray: 8, 3; animation: cableFlow 12s linear infinite;
-        }
+        #cable-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: visible; }
+        svg path.cable-path { pointer-events: visibleStroke; transition: stroke-width 0.2s, stroke 0.2s; stroke-dasharray: 8, 3; animation: cableFlow 12s linear infinite; }
         svg path.cable-path:hover { stroke-width: 4.5px !important; cursor: pointer; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
-
         @keyframes cableFlow { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
-
-        .rack-cabinet {
-            width: 100%; background: #1e293b; border: 2px solid #475569; padding: 24px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 20px 40px -10px rgba(0,0,0,0.4);
-            box-sizing: border-box; position: relative; transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .rack-top-handles {
-            position: absolute; top: -24px; left: 0; right: 0; display: flex;
-            justify-content: space-between; padding: 0 38px; pointer-events: none; z-index: 5;
-        }
-
+        .rack-cabinet { width: 100%; background: #1e293b; border: 2px solid #475569; padding: 24px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 20px 40px -10px rgba(0,0,0,0.4); box-sizing: border-box; position: relative; transition: background-color 0.3s, border-color 0.3s; }
+        .rack-top-handles { position: absolute; top: -24px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 38px; pointer-events: none; z-index: 5; }
         .industrial-handle { width: 68px; height: 26px; position: relative; }
-
         .metal-bezel { position: absolute; border: 1.5px solid #475569; z-index: 4; box-sizing: border-box; }
         .bezel-top { top: 0; left: 0; right: 0; height: 24px; border-bottom: 2.5px solid #475569; background: linear-gradient(to bottom, #f8fafc 0%, #cbd5e1 60%, #94a3b8 100%); }
         .bezel-bottom { bottom: 0; left: 0; right: 0; height: 24px; border-top: 2.5px solid #475569; background: linear-gradient(to top, #f8fafc 0%, #cbd5e1 60%, #94a3b8 100%); }
         .bezel-left { top: 0; bottom: 0; left: 0; width: 24px; border-right: 2.5px solid #475569; background: linear-gradient(to right, #f8fafc 0%, #cbd5e1 60%, #94a3b8 100%); }
         .bezel-right { top: 0; bottom: 0; right: 0; width: 24px; border-left: 2.5px solid #475569; background: linear-gradient(to left, #f8fafc 0%, #cbd5e1 60%, #94a3b8 100%); }
-
-        /* Unified 0.5U Continuous Sub-Slot Grid (Gap = 0px) */
-        .slots-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0px;
-            position: relative;
-            z-index: 5;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .sub-slot-row {
-            width: 320px;
-            height: 24px;
-            position: relative;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-        }
-
-        .sub-slot-row::before { 
-            content: ''; position: absolute; left: 0; top: 0; width: 20px; height: 100%;
-            background: linear-gradient(to right, #94a3b8, #64748b, #94a3b8);
-            border-right: 1px solid #475569; z-index: 1;
-        }
-
-        .sub-slot-row::after { 
-            content: ''; position: absolute; right: 0; top: 0; width: 20px; height: 100%;
-            background: linear-gradient(to right, #94a3b8, #64748b, #94a3b8);
-            border-left: 1px solid #475569; z-index: 1;
-        }
-
-        .rail-screw-hole-l, .rail-screw-hole-r {
-            position: absolute; width: 6px; height: 6px; border-radius: 50%;
-            background: #1e293b; border: 1px solid #94a3b8; z-index: 2; top: 9px;
-        }
-        .rail-screw-hole-l { left: 7px; }
-        .rail-screw-hole-r { right: 7px; }
-
-        .sub-slot-bay {
-            width: 280px;
-            height: 24px;
-            margin-left: 20px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            font-size: 8.5px;
-            font-family: monospace;
-            background-color: rgba(15, 23, 42, 0.4);
-            transition: all 0.2s ease;
-            z-index: 2;
-        }
-
-        .sub-slot-bay.drag-over {
-            border-color: var(--accent-blue);
-            background-color: rgba(0, 85, 255, 0.25);
-            color: var(--accent-blue);
-        }
-
-        .device {
-            width: 100%; height: 100%; display: flex; align-items: center;
-            background: #ffffff; color: #475569; user-select: none;
-            box-sizing: border-box; position: relative; z-index: 5;
-            border-radius: 2px; outline: none; border: 1.5px solid #cbd5e1;
-        }
-
+        .slots-container { display: flex; flex-direction: column; gap: 0px; position: relative; z-index: 5; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sub-slot-row { width: 320px; height: 24px; position: relative; box-sizing: border-box; display: flex; align-items: center; }
+        .sub-slot-row::before, .sub-slot-row::after { content: ''; position: absolute; top: 0; width: 20px; height: 100%; background: linear-gradient(to right, #94a3b8, #64748b, #94a3b8); z-index: 1; }
+        .sub-slot-row::before { left: 0; border-right: 1px solid #475569; }
+        .sub-slot-row::after { right: 0; border-left: 1px solid #475569; }
+        .rail-screw-hole-l, .rail-screw-hole-r { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #1e293b; border: 1px solid #94a3b8; z-index: 2; top: 9px; }
+        .rail-screw-hole-l { left: 7px; } .rail-screw-hole-r { right: 7px; }
+        .sub-slot-bay { width: 280px; height: 24px; margin-left: 20px; border: 1px dashed rgba(255, 255, 255, 0.1); box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 8.5px; font-family: monospace; background-color: rgba(15, 23, 42, 0.4); transition: all 0.2s ease; z-index: 2; }
+        .sub-slot-bay.drag-over { border-color: var(--accent-blue); background-color: rgba(0, 85, 255, 0.25); color: var(--accent-blue); }
+        .device { width: 100%; height: 100%; display: flex; align-items: center; background: #ffffff; color: #475569; user-select: none; box-sizing: border-box; position: relative; z-index: 5; border-radius: 2px; outline: none; border: 1.5px solid #cbd5e1; }
         body.dark-mode .device:not(.placed) { background: #1e293b; color: #f8fafc; border-color: #475569; }
-
-        .device.placed {
-            position: absolute; top: 0; left: 0;
-            width: 320px !important; z-index: 20;
-            animation: snapEffect 0.15s ease-out;
-            border: none; box-sizing: border-box;
-        }
-
-        .device.placed:focus-within, .device.placed.selected {
-            box-shadow: inset 0 0 0 2px var(--accent-blue), var(--focus-ring);
-        }
-
-        .ear-l, .ear-r {
-            width: 20px; height: 100%;
-            background: linear-gradient(to bottom, #f1f5f9 0%, #cbd5e1 50%, #94a3b8 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: space-around;
-            box-sizing: border-box; position: relative; flex-shrink: 0; z-index: 1; padding: 4px 0;
-        }
-
-        .ear-l { border-right: 1px solid #cbd5e1; border-radius: 2px 0 0 2px; }
-        .ear-r { border-left: 1px solid #cbd5e1; border-radius: 0 2px 2px 0; }
-
-        .screw-hole {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: radial-gradient(circle, #e2e8f0 10%, #64748b 70%, #1e293b 100%);
-            border: 1px solid #334155; box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-            position: relative; flex-shrink: 0;
-        }
-
-        .screw-hole::before, .screw-hole::after {
-            content: ''; position: absolute; background: #0f172a;
-            box-shadow: 0 0.5px 1px rgba(255,255,255,0.3);
-        }
-        .screw-hole::before { width: 6px; height: 1.2px; transform: rotate(45deg); }
-        .screw-hole::after { width: 1.2px; height: 6px; transform: rotate(45deg); }
-
-        @keyframes snapEffect {
-            0% { transform: scale(0.97); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .device-body {
-            flex-grow: 1; height: 100%; background: #ffffff;
-            display: flex; align-items: center; justify-content: center;
-            box-sizing: border-box; border-left: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1;
-            box-shadow: inset 0 1px 3px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.02);
-            overflow: hidden; position: relative; padding: 0 4px; z-index: 2;
-        }
-
+        .device.placed { position: absolute; top: 0; left: 0; width: 320px !important; z-index: 20; animation: snapEffect 0.15s ease-out; border: none; box-sizing: border-box; }
+        .device.placed:focus-within, .device.placed.selected { box-shadow: inset 0 0 0 2px var(--accent-blue), var(--focus-ring); }
+        .ear-l, .ear-r { width: 20px; height: 100%; background: linear-gradient(to bottom, #f1f5f9 0%, #cbd5e1 50%, #94a3b8 100%); display: flex; flex-direction: column; align-items: center; justify-content: space-around; box-sizing: border-box; position: relative; flex-shrink: 0; z-index: 1; padding: 4px 0; }
+        .ear-l { border-right: 1px solid #cbd5e1; border-radius: 2px 0 0 2px; } .ear-r { border-left: 1px solid #cbd5e1; border-radius: 0 2px 2px 0; }
+        .screw-hole { width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle, #e2e8f0 10%, #64748b 70%, #1e293b 100%); border: 1px solid #334155; box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+        .screw-hole::before, .screw-hole::after { content: ''; position: absolute; background: #0f172a; box-shadow: 0 0.5px 1px rgba(255,255,255,0.3); }
+        .screw-hole::before { width: 6px; height: 1.2px; transform: rotate(45deg); } .screw-hole::after { width: 1.2px; height: 6px; transform: rotate(45deg); }
+        @keyframes snapEffect { 0% { transform: scale(0.97); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+        .device-body { flex-grow: 1; height: 100%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-left: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; box-shadow: inset 0 1px 3px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; position: relative; padding: 0 4px; z-index: 2; }
         .device[data-type="blank"] .device-body { background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
-        
-        .device[data-type="brush-panel"] .device-body,
-        .device[data-type="deskpi-dp0043"] .device-body {
-            background: repeating-linear-gradient(90deg, #111827, #111827 6px, #1e293b 6px, #1e293b 9px);
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
-            border-top: 1px solid #334155; border-bottom: 1px solid #334155;
-            width: 100%; height: 100%; min-height: 16px;
-        }
-
-        /* 3D Printed Brackets Uniformly Matte White */
-        .bracket-3d {
-            width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, #ffffff, #ffffff 1.5px, #f1f5f9 1.5px, #f1f5f9 3px);
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.08);
-            display: flex; align-items: center; justify-content: center;
-            border-left: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; box-sizing: border-box;
-        }
-
-        .unifi-chassis {
-            background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 5px;
-            height: 34px; display: flex; align-items: center; justify-content: center;
-            padding: 0 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.9);
-            box-sizing: border-box;
-        }
-
-        .uck-chassis {
-            background: #090d16; border: 1.5px solid #334155; border-radius: 4px; height: 34px;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 8px; box-sizing: border-box;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4);
-        }
-
-        .xerxes-chassis {
-            background: #090d16; border: 1.5px solid #334155; border-radius: 4px;
-            width: 100%; height: 90%; display: flex; align-items: center; justify-content: space-around;
-            padding: 2px 4px; box-sizing: border-box;
-        }
-
-        .xerxes-blade-bay {
-            height: 90%; flex: 1; border-right: 1px solid #1e293b; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-            box-sizing: border-box; background: repeating-linear-gradient(90deg, #0f172a, #0f172a 2px, #090d16 2px, #090d16 4px);
-            border-radius: 2px; margin: 0 1px;
-        }
+        .device[data-type="brush-panel"] .device-body, .device[data-type="deskpi-dp0043"] .device-body { background: repeating-linear-gradient(90deg, #111827, #111827 6px, #1e293b 6px, #1e293b 9px); box-shadow: inset 0 0 8px rgba(0,0,0,0.8); border-top: 1px solid #334155; border-bottom: 1px solid #334155; width: 100%; height: 100%; min-height: 16px; }
+        .bracket-3d { width: 100%; height: 100%; background: repeating-linear-gradient(0deg, #ffffff, #ffffff 1.5px, #f1f5f9 1.5px, #f1f5f9 3px); box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.08); display: flex; align-items: center; justify-content: center; border-left: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; box-sizing: border-box; }
+        .unifi-chassis { background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 5px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.9); box-sizing: border-box; }
+        .device[data-type="unvr-instant"].u-2 .unifi-chassis { height: 76px; }
+        .uck-chassis { background: #090d16; border: 1.5px solid #334155; border-radius: 4px; height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4); }
+        .xerxes-chassis { background: #090d16; border: 1.5px solid #334155; border-radius: 4px; width: 100%; height: 90%; display: flex; align-items: center; justify-content: space-around; padding: 2px 4px; box-sizing: border-box; }
+        .xerxes-blade-bay { height: 90%; flex: 1; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-sizing: border-box; background: repeating-linear-gradient(90deg, #0f172a, #0f172a 2px, #090d16 2px, #090d16 4px); border-radius: 2px; margin: 0 1px; }
         .xerxes-blade-bay:last-child { border-right: none; }
-
-        .dell-chassis {
-            background: #18181b; border: 1.5px solid #3f3f46; border-radius: 4px;
-            height: 34px; display: flex; align-items: center; padding: 2px 6px; box-sizing: border-box;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4);
-        }
-
+        .dell-chassis { background: #18181b; border: 1.5px solid #3f3f46; border-radius: 4px; height: 34px; display: flex; align-items: center; padding: 2px 6px; box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4); }
         .dell-faceplate { width: 100%; height: 100%; display: flex; align-items: center; gap: 6px; }
         .dell-left-panel { display: flex; align-items: center; gap: 5px; height: 100%; padding-right: 6px; border-right: 1px solid #3f3f46; }
         .dell-power-btn { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #71717a; background: radial-gradient(circle, #3f3f46 40%, #18181b 100%); display: flex; align-items: center; justify-content: center; }
@@ -335,131 +96,29 @@
         .dell-badge { font-size: 4.5px; font-family: sans-serif; color: #a1a1aa; writing-mode: vertical-lr; text-transform: uppercase; letter-spacing: -0.3px; transform: rotate(180deg); max-height: 26px; line-height: 1; font-weight: bold; overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
         .dell-right-mesh { flex-grow: 1; height: 100%; background: repeating-linear-gradient(-45deg, #18181b, #18181b 2px, #090d16 2px, #090d16 4px); border-radius: 2px; display: flex; align-items: center; justify-content: center; position: relative; }
         .dell-logo-circle { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #cbd5e1; color: #f8fafc; font-size: 6px; font-weight: bold; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; background: rgba(24, 24, 27, 0.85); letter-spacing: -0.5px; box-shadow: 0 0 3px rgba(0,0,0,0.5); }
-
-        /* NVIDIA DGX Spark 2U 3D Mount Styling */
-        .dgx-chassis {
-            background: repeating-linear-gradient(0deg, #ffffff, #ffffff 1.5px, #f1f5f9 1.5px, #f1f5f9 3px);
-            border: 1.5px solid #cbd5e1;
-            border-radius: 4px;
-            height: 84px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.08);
-            padding: 4px;
-            width: 100%;
-        }
-
-        .dgx-mount-frame {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-        }
-
-        .dgx-spark-faceplate {
-            width: 160px;
-            height: 54px;
-            background: #12100b;
-            border: 1.5px solid #d4af37;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 2px 3px;
-            box-sizing: border-box;
-            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3), inset 0 0 8px rgba(0,0,0,0.9);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dgx-badge-left {
-            width: 28px;
-            height: 46px;
-            background: linear-gradient(135deg, #ffe58f 0%, #d4af37 50%, #996515 100%);
-            border-radius: 3px;
-            border: 1px solid #fff2a8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.4);
-            flex-shrink: 0;
-            z-index: 2;
-        }
-
-        .nvidia-logo-box {
-            width: 12px;
-            height: 10px;
-            background: #76b900;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-
-        .nvidia-eye {
-            width: 7px;
-            height: 5px;
-            border-top: 1.5px solid #ffffff;
-            border-right: 1.5px solid #ffffff;
-            border-radius: 0 2px 0 0;
-        }
-
-        .nvidia-text {
-            font-size: 4.5px;
-            font-weight: 900;
-            color: #000000;
-            font-family: Arial, sans-serif;
-            letter-spacing: -0.3px;
-            transform: scaleY(0.9);
-        }
-
-        .dgx-mesh-grill {
-            flex-grow: 1;
-            height: 46px;
-            margin: 0 3px;
-            border-radius: 2px;
-            background: 
-                radial-gradient(#e5c158 20%, transparent 20%) 0 0 / 3px 3px,
-                radial-gradient(#8c6d1f 20%, transparent 20%) 1.5px 1.5px / 3px 3px,
-                linear-gradient(180deg, #3d3112 0%, #1c1606 100%);
-            border: 1px solid #665018;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
-        }
-
-        .dgx-badge-right {
-            width: 28px;
-            height: 46px;
-            background: linear-gradient(135deg, #ffe58f 0%, #d4af37 50%, #996515 100%);
-            border-radius: 3px;
-            border: 1px solid #fff2a8;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.4);
-            flex-shrink: 0;
-            z-index: 2;
-            position: relative;
-        }
-
-        .dgx-badge-right::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 12px; height: 26px;
-            background: rgba(0,0,0,0.15);
-            border-radius: 2px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
+        .macmini-chassis { background: repeating-linear-gradient(0deg, #ffffff, #ffffff 1.5px, #f1f5f9 1.5px, #f1f5f9 3px); border: 1.5px solid #cbd5e1; border-radius: 4px; height: 84px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 6px 10px; box-sizing: border-box; width: 100%; position: relative; box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.08); }
+        .macmini-cutout-top { width: 155px; height: 24px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1.5px solid #cbd5e1; border-radius: 5px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; box-sizing: border-box; box-shadow: 0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9); }
+        .macmini-usbc-ports { display: flex; gap: 4px; align-items: center; }
+        .macmini-usbc-vert { width: 2.5px; height: 10px; background: #0f172a; border-radius: 1px; }
+        .macmini-right-indicators { display: flex; align-items: center; gap: 6px; }
+        .macmini-led-dot { width: 2.5px; height: 2.5px; background: #0f172a; border-radius: 50%; }
+        .macmini-jack-circle { width: 5px; height: 5px; background: #0f172a; border-radius: 50%; }
+        .macmini-cutout-bottom { width: 195px; height: 32px; background: #0f172a; border: 1.5px solid #334155; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; box-sizing: border-box; gap: 8px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.6); }
+        .macmini-power-lever-bay { width: 20px; height: 100%; display: flex; align-items: center; justify-content: center; border-right: 1px solid #1e293b; padding-right: 6px; }
+        .macmini-power-slot { width: 8px; height: 22px; background: #1e293b; border: 1px solid #475569; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 2px; box-sizing: border-box; }
+        .macmini-power-knob { width: 5px; height: 7px; background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%); border: 0.5px solid #64748b; border-radius: 3px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+        .macmini-keystone-grid { flex-grow: 1; display: flex; align-items: center; justify-content: space-around; height: 100%; }
+        .macmini-keystone-slot { width: 18px; height: 20px; background: #1e293b; border: 1px solid #475569; border-radius: 2px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.6); }
+        .dgx-chassis { background: repeating-linear-gradient(0deg, #ffffff, #ffffff 1.5px, #f1f5f9 1.5px, #f1f5f9 3px); border: 1.5px solid #cbd5e1; border-radius: 4px; height: 84px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.08); padding: 4px; width: 100%; }
+        .dgx-mount-frame { width: 100%; height: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 3px; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); }
+        .dgx-spark-faceplate { width: 160px; height: 54px; background: #12100b; border: 1.5px solid #d4af37; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; padding: 2px 3px; box-sizing: border-box; box-shadow: 0 0 8px rgba(212, 175, 55, 0.3), inset 0 0 8px rgba(0,0,0,0.9); position: relative; overflow: hidden; }
+        .dgx-badge-left { width: 28px; height: 46px; background: linear-gradient(135deg, #ffe58f 0%, #d4af37 50%, #996515 100%); border-radius: 3px; border: 1px solid #fff2a8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.4); flex-shrink: 0; z-index: 2; }
+        .nvidia-logo-box { width: 12px; height: 10px; background: #76b900; border-radius: 2px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .nvidia-eye { width: 7px; height: 5px; border-top: 1.5px solid #ffffff; border-right: 1.5px solid #ffffff; border-radius: 0 2px 0 0; }
+        .nvidia-text { font-size: 4.5px; font-weight: 900; color: #000000; font-family: Arial, sans-serif; letter-spacing: -0.3px; transform: scaleY(0.9); }
+        .dgx-mesh-grill { flex-grow: 1; height: 46px; margin: 0 3px; border-radius: 2px; background: radial-gradient(#e5c158 20%, transparent 20%) 0 0 / 3px 3px, radial-gradient(#8c6d1f 20%, transparent 20%) 1.5px 1.5px / 3px 3px, linear-gradient(180deg, #3d3112 0%, #1c1606 100%); border: 1px solid #665018; box-shadow: inset 0 0 5px rgba(0,0,0,0.8); }
+        .dgx-badge-right { width: 28px; height: 46px; background: linear-gradient(135deg, #ffe58f 0%, #d4af37 50%, #996515 100%); border-radius: 3px; border: 1px solid #fff2a8; box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.4); flex-shrink: 0; z-index: 2; position: relative; }
+        .dgx-badge-right::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 26px; background: rgba(0,0,0,0.15); border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
         .deskpi-chassis { background: #0f172a; border: 1.5px solid #334155; border-radius: 4px; width: 100%; height: 90%; display: flex; align-items: center; justify-content: space-around; padding: 2px 6px; box-sizing: border-box; color: #f8fafc; }
         .deskpi-screen-container { width: 100%; height: 88%; background: #020617; border: 1px solid #334155; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,255,255,0.15); }
         .deskpi-hud-display { width: 96%; height: 82%; background: radial-gradient(circle, #0f172a 0%, #020617 100%); border: 1px solid #1e293b; border-radius: 3px; display: flex; align-items: center; justify-content: space-around; padding: 0 4px; box-sizing: border-box; }
@@ -467,166 +126,168 @@
         .hud-gauge.green { border-color: #10b981; color: #34d399; box-shadow: 0 0 5px rgba(16, 185, 129, 0.4); }
         .hud-gauge.orange { border-color: #f97316; color: #fb923c; box-shadow: 0 0 5px rgba(249, 115, 22, 0.4); }
         .hud-gauge.purple { border-color: #a855f7; color: #c084fc; box-shadow: 0 0 5px rgba(168, 85, 247, 0.4); }
-
         .deskpi-pi-bay { background: #1e293b; border: 1px solid #475569; border-radius: 3px; padding: 2px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .pi-badge { font-size: 6px; font-weight: bold; color: #ec4899; letter-spacing: -0.3px; }
-
         .hdd-chassis { background: #18181b; border: 1.5px solid #3f3f46; border-radius: 4px; width: 100%; height: 92%; display: flex; box-sizing: border-box; padding: 3px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4); }
         .hdd-grid-1u { display: flex; width: 100%; height: 100%; gap: 4px; align-items: center; justify-content: space-around; }
         .hdd-grid-2u { display: flex; flex-direction: column; width: 100%; height: 100%; gap: 3px; justify-content: space-around; }
         .hdd-row-2u { display: flex; width: 100%; height: 30%; gap: 4px; }
         .hdd-grid-3u { display: flex; width: 100%; height: 100%; gap: 3px; justify-content: space-between; }
-
         .caddy-horiz { flex: 1; height: 100%; background: #27272a; border: 1px solid #52525b; border-radius: 3px; display: flex; align-items: center; padding: 2px 4px; box-sizing: border-box; justify-content: space-between; position: relative; }
         .caddy-horiz .caddy-latch { width: 18px; height: 85%; background: #3f3f46; border: 1px solid #71717a; border-radius: 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; flex-shrink: 0; }
         .caddy-btn { width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle, #f97316 35%, #71717a 100%); border: 0.5px solid #18181b; box-shadow: 0 0 2px rgba(249,115,22,0.6); }
         .caddy-plus { font-size: 6px; color: #e4e4e7; line-height: 1; font-weight: bold; }
         .caddy-handle-horiz { flex-grow: 1; height: 85%; margin-left: 4px; background: linear-gradient(180deg, #3f3f46 0%, #27272a 100%); border: 1px solid #52525b; border-radius: 2px; display: flex; align-items: center; justify-content: space-evenly; padding: 0 3px; }
         .caddy-vent-slot { width: 2px; height: 60%; background: #090d16; border-radius: 1px; }
-
         .caddy-vert { flex: 1; height: 100%; background: #27272a; border: 1px solid #52525b; border-radius: 3px; display: flex; flex-direction: column; align-items: center; padding: 3px 2px; box-sizing: border-box; justify-content: space-between; }
         .caddy-vert .caddy-latch-top { width: 90%; height: 18px; background: #3f3f46; border: 1px solid #71717a; border-radius: 2px; display: flex; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; }
         .caddy-handle-vert { width: 90%; flex-grow: 1; margin-top: 3px; background: linear-gradient(90deg, #3f3f46 0%, #27272a 100%); border: 1px solid #52525b; border-radius: 2px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; padding: 3px 0; }
         .caddy-vent-slot-horiz { width: 65%; height: 2px; background: #090d16; border-radius: 1px; }
-
         .unifi-screen { width: 22px; height: 15px; background: #090d16; border-radius: 2px; border: 1px solid #475569; margin-right: 10px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); flex-shrink: 0; }
         .unifi-screen::after { content: ''; position: absolute; top: 3px; left: 3px; width: 3px; height: 3px; border-radius: 50%; background: var(--accent-blue); box-shadow: 0 0 3px var(--accent-blue); animation: activeBlink 1.8s infinite alternate; }
-
-        /* Patch Panel Styling & Sizing Rules */
         .patch-port-unit { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .port-label { height: 10px; font-size: 7px; text-align: center; border: 1px solid #cbd5e1; background-color: #ffffff; color: #1e293b; border-radius: 1px; padding: 0; margin: 0; outline: none; }
         .device[data-type="patch-8"] .port-label { width: 22px; }
-        
-        /* Fixed: Explicit styles for 12-Port 0.5U & 1U Patch Panels */
-        .device[data-type="patch-12"] .port-label,
-        .device[data-type="deskpi-dp0034"] .port-label { width: 13px; font-size: 6px; height: 8px; line-height: 8px; }
-        
-        .device[data-type="patch-12"] .ports-group,
-        .device[data-type="deskpi-dp0034"] .ports-group { gap: 2px; }
-        
-        .device[data-type="patch-12"] .patch-port-unit,
-        .device[data-type="deskpi-dp0034"] .patch-port-unit { gap: 1px; }
-
-        /* Compact sizing for 0.5U height elements */
+        .device[data-type="patch-12"] .port-label, .device[data-type="deskpi-dp0034"] .port-label { width: 13px; font-size: 6px; height: 8px; line-height: 8px; }
+        .device[data-type="patch-12"] .ports-group, .device[data-type="deskpi-dp0034"] .ports-group { gap: 2px; }
+        .device[data-type="patch-12"] .patch-port-unit, .device[data-type="deskpi-dp0034"] .patch-port-unit { gap: 1px; }
         .device.u-05 .port-rj45 { width: 10px; height: 8px; }
         .device.u-05 .patch-port-unit { gap: 1px; }
         .device.u-05 .port-label { height: 8px; font-size: 5.5px; line-height: 8px; }
-
         .port-label:focus { border-color: var(--accent-blue); background-color: #f8fafc; box-shadow: 0 0 3px rgba(0, 85, 255, 0.35); }
-
         .ports-group { display: flex; align-items: center; gap: 4px; }
         .port-gap { width: 6px; }
-
-        .port-rj45 {
-            width: 11px; height: 10px; background: #11141d;
-            border: 1.5px solid #94a3b8; border-top-color: #64748b;
-            box-sizing: border-box; border-radius: 1px; position: relative; cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
+        .port-rj45 { width: 11px; height: 10px; background: #11141d; border: 1.5px solid #94a3b8; border-top-color: #64748b; box-sizing: border-box; border-radius: 1px; position: relative; cursor: pointer; transition: all 0.15s ease; }
         .port-rj45::before { content: ''; position: absolute; top: -6px; bottom: -6px; left: -6px; right: -6px; z-index: 1; }
         .port-rj45::after { content: ''; position: absolute; bottom: 0px; left: 2px; right: 2px; height: 2px; background: #1e293b; }
-
         .port-rj45:hover { border-color: var(--accent-blue) !important; box-shadow: 0 0 8px rgba(0, 85, 255, 0.6); transform: scale(1.2); z-index: 10; }
         .port-rj45.port-selected { border-color: var(--accent-blue) !important; box-shadow: 0 0 10px var(--accent-blue), inset 0 0 3px var(--accent-blue) !important; transform: scale(1.2); z-index: 10; animation: portPulse 1s infinite alternate; }
-
-        @keyframes portPulse {
-            0% { transform: scale(1.1); box-shadow: 0 0 4px var(--accent-blue); }
-            100% { transform: scale(1.3); box-shadow: 0 0 12px var(--accent-blue); }
-        }
-
+        @keyframes portPulse { 0% { transform: scale(1.1); box-shadow: 0 0 4px var(--accent-blue); } 100% { transform: scale(1.3); box-shadow: 0 0 12px var(--accent-blue); } }
         .switch-port-unit { display: flex; flex-direction: column; align-items: center; gap: 2.5px; }
         .led { width: 3px; height: 3px; border-radius: 50%; background-color: #e2e8f0; transition: background-color 0.3s, box-shadow 0.3s; }
         .led.active-green { background-color: var(--accent-green) !important; box-shadow: 0 0 5px var(--accent-green) !important; }
         .led.active-blue { background-color: var(--accent-blue) !important; box-shadow: 0 0 5px var(--accent-blue) !important; }
         .led.active-orange { background-color: var(--accent-orange) !important; box-shadow: 0 0 5px var(--accent-orange) !important; }
         .led.active-cyan { background-color: var(--accent-sfp) !important; box-shadow: 0 0 5px var(--accent-sfp) !important; }
-
         .blink { animation: activeBlink 0.9s infinite alternate; }
         .blink-slow { animation: activeBlink 1.6s infinite alternate; }
-
         @keyframes activeBlink { 0% { opacity: 0.35; filter: brightness(0.7); } 100% { opacity: 1; filter: brightness(1.3); } }
-
         .switch-grid-16 { display: flex; flex-direction: column; gap: 2px; }
         .grid-row { display: flex; gap: 2.5px; }
         .grid-row .port-rj45 { width: 10px; height: 9px; border-width: 1px; }
-
         .port-poe { border-color: var(--accent-blue) !important; } 
         .port-10g { border-color: var(--accent-orange) !important; } 
         .port-sfp { border-color: var(--accent-sfp) !important; } 
         .port-wan { border-color: #94a3b8 !important; } 
-
-        .delete-btn {
-            position: absolute; top: -5px; right: -5px; width: 16px; height: 16px;
-            background: var(--accent-red); color: white; border-radius: 50%; display: none;
-            align-items: center; justify-content: center; font-size: 11px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;
-        }
-
+        .delete-btn { position: absolute; top: -5px; right: -5px; width: 16px; height: 16px; background: var(--accent-red); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000; }
         .device.placed:hover .delete-btn { display: flex; }
-
         .right-bar { width: 280px; display: flex; flex-direction: column; gap: 20px; }
-
-        .counter-box {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 14px; background: rgba(148, 163, 184, 0.05);
-            border: 1px solid var(--panel-border); border-radius: 8px; box-sizing: border-box;
-        }
-
+        .counter-box { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(148, 163, 184, 0.05); border: 1px solid var(--panel-border); border-radius: 8px; box-sizing: border-box; }
         .counter-label { font-weight: bold; font-size: 12px; color: var(--text-color); }
         .counter-number { font-size: 24px; font-weight: 800; color: var(--accent-blue); line-height: 1; }
-
         .report-list { display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 11px; }
-        .report-item {
-            display: flex; justify-content: space-between; padding: 6px 10px;
-            background: rgba(148, 163, 184, 0.05); border-radius: 6px; border-left: 3px solid var(--panel-border);
-        }
+        .report-item { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(148, 163, 184, 0.05); border-radius: 6px; border-left: 3px solid var(--panel-border); }
         .report-item.occupied { border-left-color: var(--accent-blue); }
-
         .u-badge { color: var(--text-muted); font-weight: bold; }
         .text-blue { color: var(--accent-blue); }
         .text-muted { color: var(--text-muted); }
-
-        .btn {
-            background-color: var(--panel-bg); border: 1px solid var(--panel-border);
-            color: var(--text-color); padding: 8px 12px; border-radius: 6px;
-            cursor: pointer; font-weight: 500; font-size: 12px; transition: all 0.2s;
-            width: 100%; box-sizing: border-box; text-align: center;
-        }
-
+        .btn { background-color: var(--panel-bg); border: 1px solid var(--panel-border); color: var(--text-color); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 12px; transition: all 0.2s; width: 100%; box-sizing: border-box; text-align: center; }
         .btn:hover:not(:disabled) { background-color: rgba(148, 163, 184, 0.1); border-color: var(--text-muted); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background-color: var(--accent-blue); border-color: var(--accent-blue); color: #ffffff; }
         .btn-primary:hover:not(:disabled) { background-color: #0044cc; }
-
         .button-group { display: flex; flex-direction: column; gap: 8px; }
         .dragging { opacity: 0.4; }
-
-        .port-tooltip {
-            position: fixed; background: rgba(15, 23, 42, 0.95); color: #ffffff;
-            padding: 6px 10px; border-radius: 4px; font-size: 10px; pointer-events: none;
-            z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1);
-            white-space: nowrap; display: none; transform: translate(-50%, -100%); margin-top: -8px;
-        }
-
+        .port-tooltip { position: fixed; background: rgba(15, 23, 42, 0.95); color: #ffffff; padding: 6px 10px; border-radius: 4px; font-size: 10px; pointer-events: none; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); white-space: nowrap; display: none; transform: translate(-50%, -100%); margin-top: -8px; }
         .port-tooltip.tooltip-bottom { transform: translate(-50%, 0); margin-top: 8px; }
-
-        .cable-toast {
-            position: fixed; bottom: 20px; background: var(--accent-blue); color: #ffffff;
-            padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: bold;
-            box-shadow: 0 10px 25px rgba(0, 85, 255, 0.3); display: none; z-index: 10000;
-            animation: slideUp 0.2s ease-out;
-        }
-
+        .cable-toast { position: fixed; bottom: 20px; background: var(--accent-blue); color: #ffffff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 25px rgba(0, 85, 255, 0.3); display: none; z-index: 10000; animation: slideUp 0.2s ease-out; }
         @keyframes slideUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+        /* Footer Reference Section Styling */
+        footer.footer-references {
+            width: 100%;
+            max-width: 1280px;
+            margin-top: 35px;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+        }
+        .footer-header h2 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-header p {
+            margin: 0 0 16px 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .ref-card {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 12px 14px;
+            background: rgba(148, 163, 184, 0.04);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .ref-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 85, 255, 0.08);
+            background: rgba(0, 85, 255, 0.03);
+        }
+        .ref-header-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .ref-source {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .ref-source.makerworld { background: rgba(0, 180, 216, 0.15); color: #00b4d8; }
+        .ref-source.layerfab { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .ref-source.etsy { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+        .ref-source.nautilus { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+        .ref-icon {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+        .ref-card:hover .ref-icon {
+            color: var(--accent-blue);
+        }
+        .ref-title {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
 
     <header>
         <div>
-            <h1>UniFi 10-Inch Matte White Rack Simulator</h1>
-            <div class="subtitle">UniFi Matte White Customizable Rack & Bracket Simulator (PRO)</div>
+            <h1>DeskPi 10-Inch Rack Simulator</h1>
+            <div class="subtitle">DeskPi 10-Inch Rack Simulator</div>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
             <button id="btn-dark-mode" class="btn" style="width:auto; border-radius:20px;">🌙 Dark Mode</button>
@@ -634,17 +295,15 @@
     </header>
 
     <div class="workspace">
-        
         <div class="panel sidebar" id="sidebar">
             <div class="panel-title">Available Device Library</div>
-            <input type="text" id="search-sidebar" class="search-input" placeholder="🔍 Search device name or model (e.g., NVIDIA DGX Spark, Dell, DeskPi, HDD Cage)...">
+            <input type="text" id="search-sidebar" class="search-input" placeholder="🔍 Search device name or model (e.g., Mac Mini M4, NVIDIA DGX, Dell, DeskPi)...">
             <div id="sidebar-categories"></div>
         </div>
 
         <div class="center-stage">
             <div class="rack-wrapper-container">
                 <div class="rack-wrapper" id="rack-wrapper">
-                    
                     <svg id="cable-svg">
                         <defs>
                             <filter id="cable-shadow" filterUnits="userSpaceOnUse">
@@ -655,39 +314,27 @@
 
                     <div class="rack-cabinet">
                         <div class="rack-top-handles">
-                            <div class="industrial-handle">
-                                <svg width="68" height="26" viewBox="0 0 68 26">
-                                    <defs>
-                                        <linearGradient id="handleGrad1" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#f8fafc"/>
-                                            <stop offset="50%" stop-color="#cbd5e1"/>
-                                            <stop offset="100%" stop-color="#94a3b8"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <polygon points="10,1 58,1 67,25 1,25" fill="url(#handleGrad1)" stroke="#475569" stroke-width="2" stroke-linejoin="round"/>
-                                    <rect x="18" y="9" width="32" height="16" rx="2" fill="var(--bg-color)" stroke="#475569" stroke-width="2"/>
-                                </svg>
-                            </div>
-                            <div class="industrial-handle">
-                                <svg width="68" height="26" viewBox="0 0 68 26">
-                                    <defs>
-                                        <linearGradient id="handleGrad2" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#f8fafc"/>
-                                            <stop offset="50%" stop-color="#cbd5e1"/>
-                                            <stop offset="100%" stop-color="#94a3b8"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <polygon points="10,1 58,1 67,25 1,25" fill="url(#handleGrad2)" stroke="#475569" stroke-width="2" stroke-linejoin="round"/>
-                                    <rect x="18" y="9" width="32" height="16" rx="2" fill="var(--bg-color)" stroke="#475569" stroke-width="2"/>
-                                </svg>
-                            </div>
+                            <template id="handle-template">
+                                <div class="industrial-handle">
+                                    <svg width="68" height="26" viewBox="0 0 68 26">
+                                        <defs>
+                                            <linearGradient id="handleGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#f8fafc"/><stop offset="50%" stop-color="#cbd5e1"/><stop offset="100%" stop-color="#94a3b8"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <polygon points="10,1 58,1 67,25 1,25" fill="url(#handleGrad)" stroke="#475569" stroke-width="2" stroke-linejoin="round"/>
+                                        <rect x="18" y="9" width="32" height="16" rx="2" fill="var(--bg-color)" stroke="#475569" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                            </template>
+                            <div class="industrial-handle"><svg width="68" height="26" viewBox="0 0 68 26"><polygon points="10,1 58,1 67,25 1,25" fill="#cbd5e1" stroke="#475569" stroke-width="2"/><rect x="18" y="9" width="32" height="16" rx="2" fill="var(--bg-color)" stroke="#475569" stroke-width="2"/></svg></div>
+                            <div class="industrial-handle"><svg width="68" height="26" viewBox="0 0 68 26"><polygon points="10,1 58,1 67,25 1,25" fill="#cbd5e1" stroke="#475569" stroke-width="2"/><rect x="18" y="9" width="32" height="16" rx="2" fill="var(--bg-color)" stroke="#475569" stroke-width="2"/></svg></div>
                         </div>
 
                         <div class="metal-bezel bezel-top"></div>
                         <div class="metal-bezel bezel-bottom"></div>
                         <div class="metal-bezel bezel-left"></div>
                         <div class="metal-bezel bezel-right"></div>
-                        
                         <div class="slots-container" id="slots-container"></div>
                     </div>
                 </div>
@@ -695,9 +342,8 @@
         </div>
 
         <div class="right-bar">
-
             <div class="panel">
-                <div class="panel-title">Rack Specs & Zoom</div>
+                <div class="panel-title">Rack Specs & Controls</div>
                 <div class="counter-box" style="margin-bottom: 8px;">
                     <span class="counter-label">Total Space (U)</span>
                     <input type="number" id="input-max-u" min="1" max="16" value="10" style="width: 70px; padding: 6px; border: 1px solid var(--panel-border); border-radius: 6px; text-align: center; font-weight: bold; font-size: 14px; outline: none; background:var(--panel-bg); color:var(--text-color);">
@@ -707,6 +353,7 @@
                     <button id="btn-zoom-reset" class="btn" style="flex:1;">Reset</button>
                     <button id="btn-zoom-in" class="btn" style="flex:1;">🔍+ Zoom In</button>
                 </div>
+                <button id="btn-clear" class="btn" style="margin-top: 4px;">Clear Entire Rack</button>
             </div>
 
             <div class="panel">
@@ -716,24 +363,12 @@
                     <span id="cable-count-badge" class="counter-number">0</span>
                 </div>
                 <div style="font-size: 11px; display: flex; flex-direction: column; gap: 5px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>🔵 Standard / PoE:</span> <strong id="cnt-std" class="text-blue">0</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>🟠 10G Copper Cable:</span> <strong id="cnt-10g" style="color: var(--accent-orange);">0</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>🔴 WAN Uplink Cable:</span> <strong id="cnt-wan" style="color: var(--accent-red);">0</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>🌐 SFP+ Fiber Patch:</span> <strong id="cnt-sfp" style="color: var(--accent-sfp);">0</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>⚪ Patch Panel Jumpers:</span> <strong id="cnt-patch" style="color: #cbd5e1;">0</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--panel-border); padding-top: 5px;">
-                        <span>❌ Media Mismatch / Errors:</span> <strong id="cnt-conflict" style="color: var(--accent-red);">0</strong>
-                    </div>
+                    <div style="display: flex; justify-content: space-between;"><span>🔵 Standard / PoE:</span> <strong id="cnt-std" class="text-blue">0</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span>🟠 10G Copper Cable:</span> <strong id="cnt-10g" style="color: var(--accent-orange);">0</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span>🔴 WAN Uplink Cable:</span> <strong id="cnt-wan" style="color: var(--accent-red);">0</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span>🌐 SFP+ Fiber Patch:</span> <strong id="cnt-sfp" style="color: var(--accent-sfp);">0</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span>⚪ Patch Panel Jumpers:</span> <strong id="cnt-patch" style="color: #cbd5e1;">0</strong></div>
+                    <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--panel-border); padding-top: 5px;"><span>❌ Media Mismatch / Errors:</span> <strong id="cnt-conflict" style="color: var(--accent-red);">0</strong></div>
                 </div>
             </div>
 
@@ -741,88 +376,184 @@
                 <div class="panel-title">Live Rack Assembly Status</div>
                 <div id="report-list" class="report-list"></div>
             </div>
-
-            <div class="panel">
-                <div class="panel-title">System Controls</div>
-                <div class="button-group">
-                    <button id="btn-export-png" class="btn btn-primary">📸 Export Rack PNG Screenshot</button>
-                    <button id="btn-export" class="btn">Copy Text Report</button>
-                    <button id="btn-clear" class="btn">Clear Entire Rack</button>
-                </div>
-            </div>
-
         </div>
-
     </div>
+
+    <!-- References & 3D Model Links Footer -->
+    <footer class="footer-references panel">
+        <div class="footer-header">
+            <h2>🛠️ 3D Print Mount Models & Hardware References</h2>
+            <p>Explore source files, 3D printable brackets, and custom hardware adapters used for these 10-inch rack mounts.</p>
+        </div>
+        <div class="reference-grid">
+            <a href="https://makerworld.com/zh/models/1024889-usw-flex-2-5g-8-10-inch-rack-mount#profileId-1006894" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">USW-Flex-2.5G-8 10-Inch Rack Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2295774-unifi-flex-mini-2-5gbe-10-inch-rackmount-adapter?from=search#profileId-2505277" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi Flex Mini 2.5GbE 10-Inch Adapter</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2875409-10-inch-rack-patch-panel-keystone-bonanza?from=search#profileId-3210706" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">10-Inch Rack Patch Panel Keystone Bonanza</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/815550-unifi-usw-lite-16-poe-10-inch-1u-rack-mount?from=search#profileId-2426898" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi USW-Lite-16-PoE 10-Inch 1U Mount</span>
+            </a>
+            <a href="https://www.layerfab.com/products/2u-10-rack-mount-for-2024-m4-mac-mini-96249" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source layerfab">LayerFab</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">2U 10" Rack Mount for 2024 M4 Mac Mini</span>
+            </a>
+            <a href="https://www.etsy.com/listing/4445583058/nvidia-dgx-spark-10-rack-mount-2u-grace" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source etsy">Etsy</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">NVIDIA DGX Spark 10" Rack Mount 2U Grace</span>
+            </a>
+            <a href="https://nautilusforge.shop/product/1u-2x2-5-inch-hdd-1x3-5-inch-hdd-1x-keystone/" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source nautilus">Nautilus Forge</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">1U 2x 2.5" HDD + 1x 3.5" HDD Keystone Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/1490785-10in-mini-rack-unifi-pro-xg-8-poe-1u-mount?from=search#profileId-1558102" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi Pro XG 8 PoE 10-Inch 1U Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2117690-unifi-usw-lite-8-poe-10-1u-rack-mount-lab-rax?from=search#profileId-2291886" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi USW-Lite-8-PoE 10" 1U Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/1636027-unifi-usw-flex-2-5g-5-10-inch-rack-mount?from=search#profileId-1728307" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi USW-Flex-2.5G-5 10-Inch Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2720042-unifi-flex-mini-10-inch-rackmount-adapter?from=search#profileId-3013057" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi Flex Mini 10-Inch Mount Adapter</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2116002-10-rack-optiplex-shelf-rear-bracket-support?from=search#profileId-2289837" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">10" Rack OptiPlex Shelf Rear Support</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2475090-10-inch-rack-ubiquiti-cloudkey?from=search#profileId-2717894" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">10-Inch Rack Ubiquiti CloudKey Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/1080877-10-inch-1-2u-keystone-patchpanel-x8-ports?from=search#profileId-1072607" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">10-Inch 0.5U 8-Port Keystone Patch Panel</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/828467-unifi-usw-flex-xg-10-rack-mount?from=search#profileId-772482" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UniFi USW-Flex-XG 10" Rack Mount</span>
+            </a>
+            <a href="https://makerworld.com/zh/models/2429883-unvr-instant-2u-10in?from=search#profileId-2665401" target="_blank" rel="noopener noreferrer" class="ref-card">
+                <div class="ref-header-line">
+                    <span class="ref-source makerworld">MakerWorld</span>
+                    <span class="ref-icon">↗</span>
+                </div>
+                <span class="ref-title">UNVR Instant 2U 10-Inch Mount</span>
+            </a>
+        </div>
+    </footer>
 
     <div id="global-tooltip" class="port-tooltip"></div>
     <div id="cable-toast" class="cable-toast"></div>
 
     <script>
-        function getPortCenterInSVG(svg, el) {
+        const getPortCenterInSVG = (svg, el) => {
             const rect = el.getBoundingClientRect();
             const pt = svg.createSVGPoint();
-            pt.x = rect.left + rect.width / 2;
-            pt.y = rect.top + rect.height / 2;
+            pt.x = rect.left + rect.width / 2; pt.y = rect.top + rect.height / 2;
             const ctm = svg.getScreenCTM();
-            if (!ctm) return { x: 0, y: 0 };
-            const svgPt = pt.matrixTransform(ctm.inverse());
-            return { x: svgPt.x, y: svgPt.y };
-        }
+            return ctm ? pt.matrixTransform(ctm.inverse()) : { x: 0, y: 0 };
+        };
 
-        function getMouseInSVG(svg, e) {
+        const getMouseInSVG = (svg, e) => {
             const pt = svg.createSVGPoint();
-            pt.x = e.clientX;
-            pt.y = e.clientY;
+            pt.x = e.clientX; pt.y = e.clientY;
             const ctm = svg.getScreenCTM();
-            if (!ctm) return { x: 0, y: 0 };
-            const svgPt = pt.matrixTransform(ctm.inverse());
-            return { x: svgPt.x, y: svgPt.y };
-        }
+            return ctm ? pt.matrixTransform(ctm.inverse()) : { x: 0, y: 0 };
+        };
 
         const DEVICE_TYPES = {
-            'blank': { name: '1U White Blank Panel', ports: [], uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
-            'brush-panel': { name: '1U Brush Cable Management Panel', ports: [], uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
-            
-            /* DeskPi 0.5U Devices */
-            'deskpi-dp0043': { name: 'DeskPi 0.5U Brush Cable Entry Panel (DP-0043)', ports: [], uHeight: 0.5, tdp: 0, poeBudget: 0, heatWeight: 0 },
-            'deskpi-dp0034': { name: 'DeskPi Rackmate 0.5U 12-Port CAT6 Patch Panel (DP-0034)', ports: Array(12).fill('patch'), uHeight: 0.5, tdp: 0, poeBudget: 0, heatWeight: 0 },
-
-            'patch-8': { name: '8-Port White Patch Panel', ports: Array(8).fill('patch'), uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
-            'patch-12': { name: '12-Port White Patch Panel', ports: Array(12).fill('patch'), uHeight: 1, tdp: 0, poeBudget: 0, heatWeight: 0 },
-            
-            /* 10" Hot-Swap HDD Storage Cages */
-            'hdd-cage-1u-2x': { name: '1U 10" 2x 3.5" Hot-Swap HDD Cage (3D Mount)', ports: [], uHeight: 1, bracket: true, bracketWidth: 270, layout: 'hdd-cage-1u-2x', tdp: 15, poeBudget: 0, heatWeight: 3 },
-            'hdd-cage-2u-6x': { name: '2U 10" 6x 3.5" Hot-Swap HDD Cage (3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'hdd-cage-2u-6x', tdp: 45, poeBudget: 0, heatWeight: 5 },
-            'hdd-cage-3u-7x': { name: '3U 10" 7x 3.5" Hot-Swap HDD Cage (3D Mount)', ports: [], uHeight: 3, bracket: true, bracketWidth: 270, layout: 'hdd-cage-3u-7x', tdp: 55, poeBudget: 0, heatWeight: 6 },
-
-            'usw-pro-xg-8-poe': { name: 'USW-Pro-XG-8-PoE (w/ 3D Bracket)', ports: [...Array(8).fill('10g-poe'), 'sfp', 'sfp'], uHeight: 1, bracket: true, bracketWidth: 220, tdp: 40, poeBudget: 200, heatWeight: 5 },
-            'usw-lite-16-poe': { name: 'USW-Lite-16-PoE (w/ 3D Bracket)', ports: Array(16).fill('poe'), uHeight: 1, bracket: true, bracketWidth: 170, isGrid: true, tdp: 15, poeBudget: 45, heatWeight: 3 },
-            'usw-lite-8-poe': { name: 'USW-Lite-8-PoE (w/ 3D Bracket)', ports: [...Array(4).fill('poe'), ...Array(4).fill('gbe')], uHeight: 1, bracket: true, bracketWidth: 170, tdp: 8, poeBudget: 52, heatWeight: 2 },
-            'usw-flex-2.5g-8-poe': { name: 'USW-Flex-2.5G-8-PoE (w/ 3D Bracket)', ports: [...Array(8).fill('poe-2.5g'), '10g', 'sfp'], uHeight: 1, bracket: true, bracketWidth: 220, tdp: 12, poeBudget: 160, heatWeight: 3 },
-            'usw-flex-2.5g-8': { name: 'USW-Flex-2.5G-8 (w/ 3D Bracket)', ports: [...Array(8).fill('2.5g'), '10g', 'sfp'], uHeight: 1, bracket: true, bracketWidth: 220, tdp: 12, poeBudget: 0, heatWeight: 3 },
-            'usw-flex-2.5g-5': { name: 'USW-Flex-2.5G-5 (w/ 3D Bracket)', ports: ['poe-2.5g', ...Array(4).fill('2.5g')], uHeight: 1, bracket: true, bracketWidth: 120, tdp: 8, poeBudget: 0, heatWeight: 2, poeIn: true },
-            'usw-flex-mini': { name: 'USW-Flex-Mini (w/ 3D Bracket)', ports: ['poe-gbe', ...Array(4).fill('gbe')], uHeight: 1, bracket: true, bracketWidth: 120, tdp: 2.5, poeBudget: 0, heatWeight: 1, poeIn: true },
-            'usw-flex': { name: 'USW-Flex (w/ 3D Bracket)', ports: Array(5).fill('poe-gbe'), uHeight: 1, bracket: true, bracketWidth: 125, tdp: 5, poeBudget: 46, heatWeight: 2, poeIn: true },
-            'usw-flex-xg': { name: 'USW-Flex-XG (w/ 3D Bracket)', ports: ['poe-gbe', ...Array(4).fill('10g')], uHeight: 1, bracket: true, bracketWidth: 130, tdp: 15, poeBudget: 0, heatWeight: 4, poeIn: true },
-            'ucg-max': { name: 'Cloud Gateway Max (UCG-Max)', ports: ['wan-2.5g', ...Array(4).fill('2.5g')], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 180, layout: 'ucg-max', tdp: 16, poeBudget: 0, heatWeight: 3 },
-            'ucg-ultra': { name: 'Cloud Gateway Ultra (UCG-Ultra)', ports: [...Array(4).fill('gbe'), 'wan-2.5g'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 180, layout: 'ucg-ultra', tdp: 10, poeBudget: 0, heatWeight: 2 },
-            'ucg-fiber': { name: 'Cloud Gateway Fiber (UCG-Fiber)', ports: [...Array(3).fill('2.5g'), 'poe-2.5g', 'wan-10g', 'sfp', 'sfp'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 220, layout: 'ucg-fiber', tdp: 18, poeBudget: 0, heatWeight: 4 },
-            'ux7': { name: 'UniFi Express 7 (UX7)', ports: ['2.5g', 'wan-10g'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 140, layout: 'ux7', tdp: 15, poeBudget: 0, heatWeight: 3 },
-            'uck-g2-plus': { name: 'CloudKey Gen2 Plus (UCK-G2-PLUS w/ 3D Bracket)', ports: ['poe-gbe'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 140, layout: 'uck-g2-plus', tdp: 10, poeBudget: 0, heatWeight: 2, poeIn: true },
-            'unvr-instant': { name: 'Network Video Recorder Instant (UNVR-Instant w/ 3D Bracket)', ports: [...Array(6).fill('poe'), 'gbe'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 250, layout: 'unvr-instant', tdp: 25, poeBudget: 45, heatWeight: 3 },
-            'rapidanalysis-xerxes-6x': { name: 'Rapid Analysis Xerxes Pi 6x Blade Cluster (1U 3D Rack)', ports: Array(6).fill('poe-gbe'), uHeight: 1, bracket: true, bracketWidth: 270, layout: 'rapidanalysis-xerxes', tdp: 45, poeBudget: 0, heatWeight: 3 },
-            
-            /* Servers & Mini PCs */
-            'dell-optiplex-micro': { name: 'Dell OptiPlex 10" 3D Adapter Host', ports: [], uHeight: 1, bracket: true, bracketWidth: 235, layout: 'dell-optiplex', tdp: 35, poeBudget: 0, heatWeight: 4 },
-            'nvidia-dgx-spark': { name: 'NVIDIA DGX Spark Grace Blackwell (2U 10" 3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'nvidia-dgx-spark', tdp: 240, poeBudget: 0, heatWeight: 8 },
-
-            /* DeskPi Products */
-            'deskpi-dp0039': { name: 'DeskPi 1U 2x Pi 5 NVMe Mount (DP-0039)', ports: ['gbe', 'gbe'], uHeight: 1, bracket: true, bracketWidth: 260, layout: 'deskpi-dp0039', tdp: 15, poeBudget: 0, heatWeight: 2 },
-            'deskpi-dp0046': { name: 'DeskPi 2U 4x Pi 5 NVMe Mount (DP-0046)', ports: ['gbe', 'gbe', 'gbe', 'gbe'], uHeight: 2, bracket: true, bracketWidth: 260, layout: 'deskpi-dp0046', tdp: 30, poeBudget: 0, heatWeight: 4 },
-            'deskpi-dp0101': { name: 'DeskPi 6.91" 1U Touch Screen (DP-0101)', ports: [], uHeight: 1, bracket: true, bracketWidth: 270, layout: 'deskpi-dp0101', tdp: 5, poeBudget: 0, heatWeight: 1 },
-            'deskpi-dp0059': { name: 'DeskPi 7.84" 2U Touch Screen (DP-0059)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'deskpi-dp0059', tdp: 8, poeBudget: 0, heatWeight: 1 },
-            'deskpi-dp0100': { name: 'DeskPi 9" 3U Touch Screen (DP-0100)', ports: [], uHeight: 3, bracket: true, bracketWidth: 270, layout: 'deskpi-dp0100', tdp: 12, poeBudget: 0, heatWeight: 2 }
+            'blank': { name: '1U White Blank Panel', ports: [], uHeight: 1 },
+            'brush-panel': { name: '1U Brush Cable Management Panel', ports: [], uHeight: 1 },
+            'deskpi-dp0043': { name: 'DeskPi 0.5U Brush Cable Entry Panel (DP-0043)', ports: [], uHeight: 0.5 },
+            'deskpi-dp0034': { name: 'DeskPi Rackmate 0.5U 12-Port CAT6 Patch Panel (DP-0034)', ports: Array(12).fill('patch'), uHeight: 0.5 },
+            'patch-8': { name: '8-Port White Patch Panel', ports: Array(8).fill('patch'), uHeight: 1 },
+            'patch-12': { name: '12-Port White Patch Panel', ports: Array(12).fill('patch'), uHeight: 1 },
+            'hdd-cage-1u-2x': { name: '1U 10" 2x 3.5" Hot-Swap HDD Cage (3D Mount)', ports: [], uHeight: 1, bracket: true, bracketWidth: 270, layout: 'hdd-1u' },
+            'hdd-cage-2u-6x': { name: '2U 10" 6x 3.5" Hot-Swap HDD Cage (3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'hdd-2u' },
+            'hdd-cage-3u-7x': { name: '3U 10" 7x 3.5" Hot-Swap HDD Cage (3D Mount)', ports: [], uHeight: 3, bracket: true, bracketWidth: 270, layout: 'hdd-3u' },
+            'usw-pro-xg-8-poe': { name: 'USW-Pro-XG-8-PoE (w/ 3D Bracket)', ports: [...Array(8).fill('10g-poe'), 'sfp', 'sfp'], uHeight: 1, bracket: true, bracketWidth: 220 },
+            'usw-lite-16-poe': { name: 'USW-Lite-16-PoE (w/ 3D Bracket)', ports: Array(16).fill('poe'), uHeight: 1, bracket: true, bracketWidth: 170, isGrid: true },
+            'usw-lite-8-poe': { name: 'USW-Lite-8-PoE (w/ 3D Bracket)', ports: [...Array(4).fill('poe'), ...Array(4).fill('gbe')], uHeight: 1, bracket: true, bracketWidth: 170 },
+            'usw-flex-2.5g-8-poe': { name: 'USW-Flex-2.5G-8-PoE (w/ 3D Bracket)', ports: [...Array(8).fill('poe-2.5g'), '10g', 'sfp'], uHeight: 1, bracket: true, bracketWidth: 220 },
+            'usw-flex-2.5g-8': { name: 'USW-Flex-2.5G-8 (w/ 3D Bracket)', ports: [...Array(8).fill('2.5g'), '10g', 'sfp'], uHeight: 1, bracket: true, bracketWidth: 220 },
+            'usw-flex-2.5g-5': { name: 'USW-Flex-2.5G-5 (w/ 3D Bracket)', ports: ['poe-2.5g', ...Array(4).fill('2.5g')], uHeight: 1, bracket: true, bracketWidth: 120 },
+            'usw-flex-mini': { name: 'USW-Flex-Mini (w/ 3D Bracket)', ports: ['poe-gbe', ...Array(4).fill('gbe')], uHeight: 1, bracket: true, bracketWidth: 120 },
+            'usw-flex': { name: 'USW-Flex (w/ 3D Bracket)', ports: Array(5).fill('poe-gbe'), uHeight: 1, bracket: true, bracketWidth: 125 },
+            'usw-flex-xg': { name: 'USW-Flex-XG (w/ 3D Bracket)', ports: ['poe-gbe', ...Array(4).fill('10g')], uHeight: 1, bracket: true, bracketWidth: 130 },
+            'ucg-max': { name: 'Cloud Gateway Max (UCG-Max)', ports: ['wan-2.5g', ...Array(4).fill('2.5g')], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 180, layout: 'ucg-max' },
+            'ucg-ultra': { name: 'Cloud Gateway Ultra (UCG-Ultra)', ports: [...Array(4).fill('gbe'), 'wan-2.5g'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 180, layout: 'ucg-ultra' },
+            'ucg-fiber': { name: 'Cloud Gateway Fiber (UCG-Fiber)', ports: [...Array(3).fill('2.5g'), 'poe-2.5g', 'wan-10g', 'sfp', 'sfp'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 220, layout: 'ucg-fiber' },
+            'ux7': { name: 'UniFi Express 7 (UX7)', ports: ['2.5g', 'wan-10g'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 140, layout: 'ux7' },
+            'uck-g2-plus': { name: 'CloudKey Gen2 Plus (UCK-G2-PLUS w/ 3D Bracket)', ports: ['poe-gbe'], uHeight: 1, hasScreen: true, bracket: true, bracketWidth: 140, layout: 'uck-g2-plus' },
+            'unvr-instant': { name: 'Network Video Recorder Instant (UNVR-Instant w/ 3D Bracket)', ports: [...Array(6).fill('poe'), 'gbe'], uHeight: 2, hasScreen: true, bracket: true, bracketWidth: 250, layout: 'unvr-instant' },
+            'rapidanalysis-xerxes-6x': { name: 'Rapid Analysis Xerxes Pi 6x Blade Cluster (1U 3D Rack)', ports: Array(6).fill('poe-gbe'), uHeight: 1, bracket: true, bracketWidth: 270, layout: 'rapidanalysis-xerxes' },
+            'dell-optiplex-micro': { name: 'Dell OptiPlex 10" 3D Adapter Host', ports: [], uHeight: 1, bracket: true, bracketWidth: 235, layout: 'dell-optiplex' },
+            'mac-mini-m4-2u': { name: 'Mac Mini M4 (2U 10" 3D Mount w/ Power Lever)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'mac-mini-m4-2u' },
+            'nvidia-dgx-spark': { name: 'NVIDIA DGX Spark Grace Blackwell (2U 10" 3D Mount)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'nvidia-dgx-spark' },
+            'deskpi-dp0039': { name: 'DeskPi 1U 2x Pi 5 NVMe Mount (DP-0039)', ports: ['gbe', 'gbe'], uHeight: 1, bracket: true, bracketWidth: 260, layout: 'deskpi-dp0039' },
+            'deskpi-dp0046': { name: 'DeskPi 2U 4x Pi 5 NVMe Mount (DP-0046)', ports: ['gbe', 'gbe', 'gbe', 'gbe'], uHeight: 2, bracket: true, bracketWidth: 260, layout: 'deskpi-dp0046' },
+            'deskpi-dp0101': { name: 'DeskPi 6.91" 1U Touch Screen (DP-0101)', ports: [], uHeight: 1, bracket: true, bracketWidth: 270, layout: 'deskpi-screen' },
+            'deskpi-dp0059': { name: 'DeskPi 7.84" 2U Touch Screen (DP-0059)', ports: [], uHeight: 2, bracket: true, bracketWidth: 270, layout: 'deskpi-screen' },
+            'deskpi-dp0100': { name: 'DeskPi 9" 3U Touch Screen (DP-0100)', ports: [], uHeight: 3, bracket: true, bracketWidth: 270, layout: 'deskpi-screen' }
         };
 
         const PORT_SPECS = {
@@ -853,7 +584,7 @@
             { title: '🌐 Routers & Gateways', types: ['ucg-max', 'ucg-ultra', 'ucg-fiber', 'ux7'] },
             { title: '📹 UniFi Consoles & Protect NVR', types: ['uck-g2-plus', 'unvr-instant'] },
             { title: '🍓 Cluster & Blade Racks (Rapid Analysis / DeskPi)', types: ['rapidanalysis-xerxes-6x', 'deskpi-dp0039', 'deskpi-dp0046', 'deskpi-dp0101', 'deskpi-dp0059', 'deskpi-dp0100'] },
-            { title: '💻 Servers, Mini PCs & AI (Dell / NVIDIA)', types: ['dell-optiplex-micro', 'nvidia-dgx-spark'] }
+            { title: '💻 Servers, Mini PCs & AI (Dell / Apple / NVIDIA)', types: ['dell-optiplex-micro', 'mac-mini-m4-2u', 'nvidia-dgx-spark'] }
         ];
 
         const DeviceFactory = {
@@ -862,105 +593,69 @@
                 if (!spec) return null;
 
                 const dev = document.createElement('div');
-                dev.className = 'device';
-                if (spec.uHeight === 0.5) dev.classList.add('u-05');
-                if (spec.uHeight === 1) dev.classList.add('u-1');
-                if (spec.uHeight === 2) dev.classList.add('u-2');
-                if (spec.uHeight === 3) dev.classList.add('u-3');
-
+                dev.className = `device u-${spec.uHeight.toString().replace('.', '')}`;
                 dev.setAttribute('data-type', type);
                 dev.setAttribute('tabindex', '0');
 
-                // Dynamic Screw Holes on Ears matching continuous 0.5U grid
-                const subUnits = Math.round(spec.uHeight * 2);
-                let holesHtml = '';
-                for (let i = 0; i < subUnits; i++) {
-                    holesHtml += '<div class="screw-hole"></div>';
-                }
-
+                const holesHtml = '<div class="screw-hole"></div>'.repeat(Math.round(spec.uHeight * 2));
                 const earL = document.createElement('div'); earL.className = 'ear-l'; earL.innerHTML = holesHtml;
                 const earR = document.createElement('div'); earR.className = 'ear-r'; earR.innerHTML = holesHtml;
-
                 const body = document.createElement('div'); body.className = 'device-body';
 
                 if (spec.bracket) {
                     const bracket = document.createElement('div'); bracket.className = 'bracket-3d';
+                    const caddyHoriz = `<div class="caddy-horiz"><div class="caddy-latch"><div class="caddy-btn"></div><span class="caddy-plus">+</span></div><div class="caddy-handle-horiz"><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div></div></div>`;
+                    const caddyVert = `<div class="caddy-vert"><div class="caddy-latch-top"><div class="caddy-btn"></div></div><div class="caddy-handle-vert"><div class="caddy-vent-slot-horiz"></div><div class="caddy-vent-slot-horiz"></div><div class="caddy-vent-slot-horiz"></div><div class="caddy-vent-slot-horiz"></div></div></div>`;
 
-                    if (spec.layout === 'hdd-cage-1u-2x') {
+                    if (spec.layout?.startsWith('hdd-')) {
                         const chassis = document.createElement('div'); chassis.className = 'hdd-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
-                        chassis.innerHTML = `<div class="hdd-grid-1u"><div class="caddy-horiz"><div class="caddy-latch"><div class="caddy-btn"></div><span class="caddy-plus">+</span></div><div class="caddy-handle-horiz"><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div></div></div><div class="caddy-horiz"><div class="caddy-latch"><div class="caddy-btn"></div><span class="caddy-plus">+</span></div><div class="caddy-handle-horiz"><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div></div></div></div>`;
+                        if (spec.layout === 'hdd-1u') chassis.innerHTML = `<div class="hdd-grid-1u">${caddyHoriz.repeat(2)}</div>`;
+                        if (spec.layout === 'hdd-2u') chassis.innerHTML = `<div class="hdd-grid-2u">${`<div class="hdd-row-2u">${caddyHoriz.repeat(2)}</div>`.repeat(3)}</div>`;
+                        if (spec.layout === 'hdd-3u') chassis.innerHTML = `<div class="hdd-grid-3u">${caddyVert.repeat(7)}</div>`;
                         bracket.appendChild(chassis);
-                    } else if (spec.layout === 'hdd-cage-2u-6x') {
-                        const chassis = document.createElement('div'); chassis.className = 'hdd-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
-                        let rowsHtml = '';
-                        for (let r = 0; r < 3; r++) {
-                            rowsHtml += `<div class="hdd-row-2u"><div class="caddy-horiz"><div class="caddy-latch"><div class="caddy-btn"></div><span class="caddy-plus">+</span></div><div class="caddy-handle-horiz"><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div></div></div><div class="caddy-horiz"><div class="caddy-latch"><div class="caddy-btn"></div><span class="caddy-plus">+</span></div><div class="caddy-handle-horiz"><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div><div class="caddy-vent-slot"></div></div></div></div>`;
-                        }
-                        chassis.innerHTML = `<div class="hdd-grid-2u">${rowsHtml}</div>`; bracket.appendChild(chassis);
-                    } else if (spec.layout === 'hdd-cage-3u-7x') {
-                        const chassis = document.createElement('div'); chassis.className = 'hdd-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
-                        let colsHtml = '';
-                        for (let c = 0; c < 7; c++) {
-                            colsHtml += `<div class="caddy-vert"><div class="caddy-latch-top"><div class="caddy-btn"></div></div><div class="caddy-handle-vert"><div class="caddy-vent-slot-horiz"></div><div class="caddy-vent-slot-horiz"></div><div class="caddy-vent-slot-horiz"></div><div class="caddy-vent-slot-horiz"></div></div></div>`;
-                        }
-                        chassis.innerHTML = `<div class="hdd-grid-3u">${colsHtml}</div>`; bracket.appendChild(chassis);
                     } else if (spec.layout === 'dell-optiplex') {
                         const chassis = document.createElement('div'); chassis.className = 'dell-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
                         chassis.innerHTML = `<div class="dell-faceplate"><div class="dell-left-panel"><div class="dell-power-btn"><div class="power-icon"></div></div><div class="dell-jacks"><div class="dell-jack"></div><div class="dell-jack"></div></div><div class="dell-usb3"></div><div class="dell-usbc"></div><div class="dell-badge">OptiPlex</div></div><div class="dell-right-mesh"><div class="dell-logo-circle">DELL</div></div></div>`;
                         bracket.appendChild(chassis);
+                    } else if (spec.layout === 'mac-mini-m4-2u') {
+                        const chassis = document.createElement('div'); chassis.className = 'macmini-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
+                        chassis.innerHTML = `<div class="macmini-cutout-top"><div class="macmini-usbc-ports"><div class="macmini-usbc-vert"></div><div class="macmini-usbc-vert"></div></div><div class="macmini-right-indicators"><div class="macmini-led-dot"></div><div class="macmini-jack-circle"></div></div></div><div class="macmini-cutout-bottom"><div class="macmini-power-lever-bay"><div class="macmini-power-slot"><div class="macmini-power-knob" title="Mac Mini Power Lever"></div></div></div><div class="macmini-keystone-grid">${'<div class="macmini-keystone-slot"></div>'.repeat(6)}</div></div>`;
+                        bracket.appendChild(chassis);
                     } else if (spec.layout === 'nvidia-dgx-spark') {
                         const chassis = document.createElement('div'); chassis.className = 'dgx-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
-                        chassis.innerHTML = `
-                            <div class="dgx-mount-frame">
-                                <div class="dgx-spark-faceplate">
-                                    <div class="dgx-badge-left">
-                                        <div class="nvidia-logo-box">
-                                            <div class="nvidia-eye"></div>
-                                        </div>
-                                        <span class="nvidia-text">NVIDIA</span>
-                                    </div>
-                                    <div class="dgx-mesh-grill"></div>
-                                    <div class="dgx-badge-right"></div>
-                                </div>
-                            </div>`;
+                        chassis.innerHTML = `<div class="dgx-mount-frame"><div class="dgx-spark-faceplate"><div class="dgx-badge-left"><div class="nvidia-logo-box"><div class="nvidia-eye"></div></div><span class="nvidia-text">NVIDIA</span></div><div class="dgx-mesh-grill"></div><div class="dgx-badge-right"></div></div></div>`;
                         bracket.appendChild(chassis);
                     } else if (spec.layout === 'uck-g2-plus') {
                         const chassis = document.createElement('div'); chassis.className = 'uck-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
                         chassis.appendChild(this.renderPorts(type, spec, startSubSlot));
-                        if (spec.hasScreen) {
-                            const screen = document.createElement('div'); screen.className = 'unifi-screen'; screen.style.marginRight = '0'; screen.style.marginLeft = '8px';
-                            chassis.appendChild(screen);
-                        }
+                        if (spec.hasScreen) chassis.innerHTML += '<div class="unifi-screen" style="margin-right:0; margin-left:8px;"></div>';
                         bracket.appendChild(chassis);
                     } else if (spec.layout === 'rapidanalysis-xerxes') {
                         const chassis = document.createElement('div'); chassis.className = 'xerxes-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
                         spec.ports.forEach((ptype, idx) => {
                             const bay = document.createElement('div'); bay.className = 'xerxes-blade-bay';
                             const unit = document.createElement('div'); unit.className = 'switch-port-unit';
-                            const led = document.createElement('div'); led.className = 'led';
-                            const port = this.createRJ45(ptype, idx, startSubSlot, spec);
-                            unit.appendChild(led); unit.appendChild(port); bay.appendChild(unit); chassis.appendChild(bay);
+                            unit.appendChild(document.createElement('div')).className = 'led';
+                            unit.appendChild(this.createRJ45(ptype, idx, startSubSlot));
+                            bay.appendChild(unit); chassis.appendChild(bay);
                         });
                         bracket.appendChild(chassis);
-                    } else if (spec.layout === 'deskpi-dp0101' || spec.layout === 'deskpi-dp0059' || spec.layout === 'deskpi-dp0100') {
-                        const screenContainer = document.createElement('div'); screenContainer.className = 'deskpi-screen-container';
-                        screenContainer.innerHTML = `<div class="deskpi-hud-display"><div class="hud-gauge green">CPU<br>38%</div><div class="hud-gauge orange">TEMP<br>45°C</div><div class="hud-gauge purple">RAM<br>52%</div><div class="hud-gauge">FPS<br>60</div></div>`;
-                        bracket.appendChild(screenContainer);
-                    } else if (spec.layout === 'deskpi-dp0039' || spec.layout === 'deskpi-dp0046') {
+                    } else if (spec.layout === 'deskpi-screen') {
+                        const screen = document.createElement('div'); screen.className = 'deskpi-screen-container';
+                        screen.innerHTML = `<div class="deskpi-hud-display"><div class="hud-gauge green">CPU<br>38%</div><div class="hud-gauge orange">TEMP<br>45°C</div><div class="hud-gauge purple">RAM<br>52%</div><div class="hud-gauge">FPS<br>60</div></div>`;
+                        bracket.appendChild(screen);
+                    } else if (spec.layout?.startsWith('deskpi-dp00')) {
                         const chassis = document.createElement('div'); chassis.className = 'deskpi-chassis';
                         spec.ports.forEach((ptype, idx) => {
                             const bay = document.createElement('div'); bay.className = 'deskpi-pi-bay';
-                            const badge = document.createElement('span'); badge.className = 'pi-badge'; badge.textContent = `RPi 5 #${idx+1}`;
-                            const port = this.createRJ45(ptype, idx, startSubSlot, spec);
-                            bay.appendChild(badge); bay.appendChild(port); chassis.appendChild(bay);
+                            bay.innerHTML = `<span class="pi-badge">RPi 5 #${idx+1}</span>`;
+                            bay.appendChild(this.createRJ45(ptype, idx, startSubSlot));
+                            chassis.appendChild(bay);
                         });
                         bracket.appendChild(chassis);
                     } else {
                         const chassis = document.createElement('div'); chassis.className = 'unifi-chassis'; chassis.style.width = `${spec.bracketWidth}px`;
-                        if (spec.hasScreen) {
-                            const screen = document.createElement('div'); screen.className = 'unifi-screen';
-                            chassis.appendChild(screen);
-                        }
+                        if (spec.hasScreen) chassis.innerHTML += '<div class="unifi-screen"></div>';
                         chassis.appendChild(this.renderPorts(type, spec, startSubSlot));
                         bracket.appendChild(chassis);
                     }
@@ -970,14 +665,13 @@
                     if (portsGroup.children.length > 0) body.appendChild(portsGroup);
                 }
 
-                dev.appendChild(earL); dev.appendChild(body); dev.appendChild(earR);
+                dev.append(earL, body, earR);
 
                 if (startSubSlot) {
                     dev.classList.add('placed');
                     dev.style.height = `${spec.uHeight * 48}px`;
                     this.setupPlacedActions(dev);
                 }
-
                 return dev;
             },
 
@@ -986,45 +680,35 @@
 
                 if (spec.isGrid) {
                     portsGroup.className = 'switch-grid-16';
-                    const row1 = document.createElement('div'); row1.className = 'grid-row';
-                    const row2 = document.createElement('div'); row2.className = 'grid-row';
-                    spec.ports.forEach((ptype, idx) => {
-                        const port = this.createRJ45(ptype, idx, startSubSlot, spec);
-                        if (idx % 2 === 0) row1.appendChild(port); else row2.appendChild(port);
-                    });
-                    portsGroup.appendChild(row1); portsGroup.appendChild(row2);
+                    const r1 = document.createElement('div'); r1.className = 'grid-row';
+                    const r2 = document.createElement('div'); r2.className = 'grid-row';
+                    spec.ports.forEach((ptype, idx) => (idx % 2 === 0 ? r1 : r2).appendChild(this.createRJ45(ptype, idx, startSubSlot)));
+                    portsGroup.append(r1, r2);
                     return portsGroup;
                 }
 
                 spec.ports.forEach((ptype, idx) => {
-                    if (spec.layout === 'ucg-max' && idx === 1) portsGroup.appendChild(this.createGap(8));
-                    if (spec.layout === 'ucg-ultra' && idx === 4) portsGroup.appendChild(this.createGap(8));
-                    if (spec.layout === 'ucg-fiber' && (idx === 4 || idx === 5)) portsGroup.appendChild(this.createGap(6));
-                    if (spec.layout === 'unvr-instant' && idx === 6) portsGroup.appendChild(this.createGap(8));
-                    if (type === 'usw-pro-xg-8-poe' && idx === 8) portsGroup.appendChild(this.createGap(6));
+                    if ((spec.layout === 'ucg-max' && idx === 1) || (spec.layout === 'ucg-ultra' && idx === 4) || (spec.layout === 'unvr-instant' && idx === 6)) portsGroup.appendChild(this.createGap(8));
+                    if ((spec.layout === 'ucg-fiber' && (idx === 4 || idx === 5)) || (type === 'usw-pro-xg-8-poe' && idx === 8)) portsGroup.appendChild(this.createGap(6));
 
                     const unit = document.createElement('div');
                     if (ptype === 'patch') {
                         unit.className = 'patch-port-unit';
-                        const input = document.createElement('input');
-                        input.type = 'text'; input.className = 'port-label';
+                        const input = document.createElement('input'); input.type = 'text'; input.className = 'port-label';
                         input.placeholder = (idx + 1).toString(); input.maxLength = 8;
                         input.addEventListener('input', () => App.update());
-                        const port = this.createRJ45(ptype, idx, startSubSlot, spec);
-                        unit.appendChild(input); unit.appendChild(port);
+                        unit.append(input, this.createRJ45(ptype, idx, startSubSlot));
                     } else {
                         unit.className = 'switch-port-unit';
-                        const led = document.createElement('div'); led.className = 'led';
-                        const port = this.createRJ45(ptype, idx, startSubSlot, spec);
-                        unit.appendChild(led); unit.appendChild(port);
+                        unit.append(document.createElement('div'), this.createRJ45(ptype, idx, startSubSlot));
+                        unit.children[0].className = 'led';
                     }
                     portsGroup.appendChild(unit);
                 });
-
                 return portsGroup;
             },
 
-            createRJ45(ptype, idx, startSubSlot, spec) {
+            createRJ45(ptype, idx, startSubSlot) {
                 const port = document.createElement('div');
                 port.className = 'port-rj45';
                 if (ptype.includes('poe')) port.classList.add('port-poe');
@@ -1033,15 +717,10 @@
                 if (ptype.startsWith('wan')) port.classList.add('port-wan');
 
                 port.setAttribute('tabindex', startSubSlot ? '0' : '-1');
-                if (startSubSlot) {
-                    port.dataset.portId = `sub${startSubSlot}-p${idx}`;
-                }
+                if (startSubSlot) port.dataset.portId = `sub${startSubSlot}-p${idx}`;
 
-                port.addEventListener('mouseenter', e => Tooltip.show(e, ptype, startSubSlot, idx));
-                port.addEventListener('mouseleave', () => Tooltip.hide());
-                port.addEventListener('focus', e => Tooltip.show(e, ptype, startSubSlot, idx));
-                port.addEventListener('blur', () => Tooltip.hide());
-
+                ['mouseenter', 'focus'].forEach(ev => port.addEventListener(ev, e => Tooltip.show(e, ptype, startSubSlot, idx)));
+                ['mouseleave', 'blur'].forEach(ev => port.addEventListener(ev, () => Tooltip.hide()));
                 return port;
             },
 
@@ -1078,18 +757,11 @@
             init() {
                 document.addEventListener('mousedown', e => {
                     const port = e.target.closest('.port-rj45');
-                    if (!port || !port.closest('.sub-slot-row')) return;
-                    e.preventDefault(); this.startConnection(port);
+                    if (port && port.closest('.sub-slot-row')) { e.preventDefault(); this.startConnection(port); }
                 });
-
-                document.addEventListener('mousemove', e => {
-                    if (this.dragStartPort) this.updateDragLine(e);
-                });
-
+                document.addEventListener('mousemove', e => { if (this.dragStartPort) this.updateDragLine(e); });
                 document.addEventListener('mouseup', e => {
-                    if (!this.dragStartPort) return;
-                    const targetPort = e.target.closest('.port-rj45');
-                    this.endConnection(targetPort);
+                    if (this.dragStartPort) this.endConnection(e.target.closest('.port-rj45'));
                 });
             },
 
@@ -1098,11 +770,7 @@
                 if (!portId) return;
 
                 const existIdx = App.connections.findIndex(c => c.from === portId || c.to === portId);
-                if (existIdx !== -1) {
-                    App.connections.splice(existIdx, 1);
-                    App.update();
-                    return;
-                }
+                if (existIdx !== -1) { App.connections.splice(existIdx, 1); App.update(); return; }
 
                 this.dragStartPort = port;
                 port.classList.add('port-selected');
@@ -1119,37 +787,22 @@
             updateDragLine(e) {
                 const svg = document.getElementById('cable-svg');
                 if (!svg || !this.dragStartPort) return;
-
-                const startPt = getPortCenterInSVG(svg, this.dragStartPort);
-                const mousePt = getMouseInSVG(svg, e);
-
-                const x1 = startPt.x, y1 = startPt.y;
-                const x2 = mousePt.x, y2 = mousePt.y;
-
-                const dx = Math.abs(x2 - x1);
-                const dy = Math.abs(y2 - y1);
+                const p1 = getPortCenterInSVG(svg, this.dragStartPort), p2 = getMouseInSVG(svg, e);
+                const dx = Math.abs(p2.x - p1.x), dy = Math.abs(p2.y - p1.y);
                 const sag = Math.max(dy, 60) + dx * 0.25;
-
-                let cp_x1 = x1, cp_x2 = x2;
-                if (dx < 40) {
-                    const loopOffset = (40 - dx) * 0.8;
-                    cp_x1 += loopOffset; cp_x2 += loopOffset;
-                }
-
-                const d = `M ${x1} ${y1} C ${cp_x1} ${y1 + sag} ${cp_x2} ${y2 + sag} ${x2} ${y2}`;
-                this.activeLine.setAttribute('d', d);
+                let cpx1 = p1.x, cpx2 = p2.x;
+                if (dx < 40) { const off = (40 - dx) * 0.8; cpx1 += off; cpx2 += off; }
+                this.activeLine.setAttribute('d', `M ${p1.x} ${p1.y} C ${cpx1} ${p1.y + sag} ${cpx2} ${p2.y + sag} ${p2.x} ${p2.y}`);
             },
 
             endConnection(targetPort) {
                 if (this.activeLine) { this.activeLine.remove(); this.activeLine = null; }
-                const startPort = this.dragStartPort;
-                this.dragStartPort = null;
-                startPort.classList.remove('port-selected');
+                const startPort = this.dragStartPort; this.dragStartPort = null;
+                startPort?.classList.remove('port-selected');
                 Toast.hide();
 
                 if (!targetPort || targetPort === startPort) return;
-                const fromId = startPort.dataset.portId;
-                const toId = targetPort.dataset.portId;
+                const fromId = startPort.dataset.portId, toId = targetPort.dataset.portId;
                 if (!fromId || !toId) return;
 
                 const existIdx = App.connections.findIndex(c => c.from === toId || c.to === toId);
@@ -1161,52 +814,32 @@
         };
 
         const App = {
-            connections: [], draggedElement: null, isFromSidebar: false,
-            maxU: 10, currentZoom: 1.0, redrawPending: false,
+            connections: [], draggedElement: null, isFromSidebar: false, maxU: 10, currentZoom: 1.0, redrawPending: false,
 
             init() {
-                this.renderSidebar();
-                this.renderSlots();
-                this.setupDragAndDrop();
-                CableManager.init();
-                this.setupKeyboardDelete();
-                this.setupGlobalControls();
-
-                const isDark = localStorage.getItem('unifi_rack_sim_dark') === 'true';
-                if (isDark) document.body.classList.add('dark-mode');
-
+                this.renderSidebar(); this.renderSlots(); this.setupDragAndDrop();
+                CableManager.init(); this.setupKeyboardDelete(); this.setupGlobalControls();
+                if (localStorage.getItem('unifi_rack_sim_dark') === 'true') document.body.classList.add('dark-mode');
                 this.loadFromStorage();
             },
 
             renderSidebar() {
-                const catContainer = document.getElementById('sidebar-categories');
-                catContainer.innerHTML = '';
-                
+                const catContainer = document.getElementById('sidebar-categories'); catContainer.innerHTML = '';
                 CATEGORIES.forEach(cat => {
-                    const block = document.createElement('div');
-                    block.className = 'sidebar-category';
+                    const block = document.createElement('div'); block.className = 'sidebar-category';
                     block.innerHTML = `<div class="category-title">${cat.title}</div>`;
 
                     cat.types.forEach(type => {
-                        const card = document.createElement('div');
-                        card.className = 'device-card';
-                        card.setAttribute('draggable', 'true');
-                        card.setAttribute('data-device-type', type);
-
-                        const cardTitle = document.createElement('div');
-                        cardTitle.className = 'device-card-title';
-                        cardTitle.innerHTML = `<span>${DEVICE_TYPES[type].name}</span>`;
-                        card.appendChild(cardTitle);
-
-                        const visualDevice = DeviceFactory.create(type);
-                        card.appendChild(visualDevice);
+                        const card = document.createElement('div'); card.className = 'device-card';
+                        card.setAttribute('draggable', 'true'); card.setAttribute('data-device-type', type);
+                        card.innerHTML = `<div class="device-card-title"><span>${DEVICE_TYPES[type].name}</span></div>`;
+                        card.appendChild(DeviceFactory.create(type));
 
                         card.addEventListener('dragstart', e => {
                             this.draggedElement = card; this.isFromSidebar = true;
                             e.dataTransfer.effectAllowed = 'copy'; card.classList.add('dragging');
                         });
                         card.addEventListener('dragend', () => card.classList.remove('dragging'));
-
                         block.appendChild(card);
                     });
                     catContainer.appendChild(block);
@@ -1215,54 +848,33 @@
                 document.getElementById('search-sidebar').addEventListener('input', e => {
                     const query = e.target.value.toLowerCase().trim();
                     document.querySelectorAll('.device-card').forEach(card => {
-                        const type = card.getAttribute('data-device-type');
-                        const name = DEVICE_TYPES[type].name.toLowerCase();
+                        const name = DEVICE_TYPES[card.getAttribute('data-device-type')].name.toLowerCase();
                         card.style.display = name.includes(query) ? 'block' : 'none';
                     });
-
                     document.querySelectorAll('.sidebar-category').forEach(cat => {
-                        const hasVisible = Array.from(cat.querySelectorAll('.device-card')).some(c => c.style.display !== 'none');
-                        cat.style.display = hasVisible ? 'block' : 'none';
+                        cat.style.display = Array.from(cat.querySelectorAll('.device-card')).some(c => c.style.display !== 'none') ? 'block' : 'none';
                     });
                 });
             },
 
             renderSlots() {
-                const container = document.getElementById('slots-container');
-                container.innerHTML = '';
-                const totalSubSlots = this.maxU * 2;
-
-                for (let sub = totalSubSlots; sub >= 1; sub--) {
-                    const isTop = sub % 2 === 0;
-                    const uNum = Math.ceil(sub / 2);
-                    const label = isTop ? `U${uNum} TOP` : `U${uNum} BOT`;
-
+                const container = document.getElementById('slots-container'); container.innerHTML = '';
+                for (let sub = this.maxU * 2; sub >= 1; sub--) {
                     const row = document.createElement('div');
-                    row.className = 'sub-slot-row';
-                    row.style.zIndex = sub;
-                    row.setAttribute('data-sub-slot', sub);
-
-                    row.innerHTML = `
-                        <div class="rail-screw-hole-l"></div>
-                        <div class="rail-screw-hole-r"></div>
-                        <div class="sub-slot-bay" data-sub-slot="${sub}">${label} (0.5U BAY)</div>
-                    `;
+                    row.className = 'sub-slot-row'; row.style.zIndex = sub; row.setAttribute('data-sub-slot', sub);
+                    row.innerHTML = `<div class="rail-screw-hole-l"></div><div class="rail-screw-hole-r"></div><div class="sub-slot-bay" data-sub-slot="${sub}">U${Math.ceil(sub / 2)} ${sub % 2 === 0 ? 'TOP' : 'BOT'} (0.5U BAY)</div>`;
                     container.appendChild(row);
                 }
             },
 
             canPlaceDevice(startSubSlot, uHeight, ignoreDevice = null) {
                 startSubSlot = parseInt(startSubSlot);
-                const subUnits = Math.round(uHeight * 2);
-                const endSubSlot = startSubSlot - subUnits + 1;
-
+                const endSubSlot = startSubSlot - Math.round(uHeight * 2) + 1;
                 if (endSubSlot < 1 || startSubSlot > this.maxU * 2) return false;
 
                 for (let sub = startSubSlot; sub >= endSubSlot; sub--) {
-                    const row = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"]`);
-                    if (!row) return false;
-                    const existingDev = row.querySelector('.device.placed');
-                    if (existingDev && existingDev !== ignoreDevice) return false;
+                    const dev = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"]`)?.querySelector('.device.placed');
+                    if (dev && dev !== ignoreDevice) return false;
                 }
                 return true;
             },
@@ -1272,63 +884,37 @@
                 const occupied = new Array(totalSubSlots + 1).fill(false);
 
                 document.querySelectorAll('.device.placed').forEach(dev => {
-                    const parentRow = dev.parentElement;
-                    if (!parentRow) return;
-                    const startSub = parseInt(parentRow.getAttribute('data-sub-slot'));
-                    const type = dev.getAttribute('data-type');
-                    const spec = DEVICE_TYPES[type];
-                    if (!spec) return;
+                    const startSub = parseInt(dev.parentElement?.getAttribute('data-sub-slot'));
+                    const spec = DEVICE_TYPES[dev.getAttribute('data-type')];
+                    if (!spec || isNaN(startSub)) return;
 
-                    const subUnits = Math.round(spec.uHeight * 2);
-                    for (let i = 0; i < subUnits; i++) {
-                        const sub = startSub - i;
-                        if (sub >= 1) occupied[sub] = true;
+                    for (let i = 0; i < Math.round(spec.uHeight * 2); i++) {
+                        if (startSub - i >= 1) occupied[startSub - i] = true;
                     }
                 });
 
                 for (let sub = 1; sub <= totalSubSlots; sub++) {
-                    const row = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"]`);
-                    if (row) {
-                        const bay = row.querySelector('.sub-slot-bay');
-                        if (bay) bay.style.display = occupied[sub] ? 'none' : 'flex';
-                    }
+                    const bay = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"] .sub-slot-bay`);
+                    if (bay) bay.style.display = occupied[sub] ? 'none' : 'flex';
                 }
             },
 
             setupDragAndDrop() {
                 document.querySelectorAll('.sub-slot-bay').forEach(bay => {
-                    bay.addEventListener('dragover', e => { 
-                        e.preventDefault(); 
-                        bay.classList.add('drag-over'); 
-                    });
+                    bay.addEventListener('dragover', e => { e.preventDefault(); bay.classList.add('drag-over'); });
                     bay.addEventListener('dragleave', () => bay.classList.remove('drag-over'));
                     bay.addEventListener('drop', e => {
-                        e.preventDefault(); 
-                        bay.classList.remove('drag-over');
-
+                        e.preventDefault(); bay.classList.remove('drag-over');
                         const startSubSlot = parseInt(bay.getAttribute('data-sub-slot'));
                         const slotRow = bay.parentElement;
 
                         if (this.isFromSidebar) {
                             const type = this.draggedElement.getAttribute('data-device-type');
-                            const uHeight = DEVICE_TYPES[type].uHeight || 1;
-
-                            if (!this.canPlaceDevice(startSubSlot, uHeight)) {
-                                Toast.show(`❌ Cannot place: Not enough continuous 0.5U space below!`);
-                                return;
-                            }
-
-                            const newDevice = DeviceFactory.create(type, startSubSlot);
-                            slotRow.appendChild(newDevice);
-                        } else if (this.draggedElement && this.draggedElement.classList.contains('placed')) {
+                            if (!this.canPlaceDevice(startSubSlot, DEVICE_TYPES[type].uHeight)) return Toast.show(`❌ Cannot place: Not enough continuous space!`);
+                            slotRow.appendChild(DeviceFactory.create(type, startSubSlot));
+                        } else if (this.draggedElement?.classList.contains('placed')) {
                             const type = this.draggedElement.getAttribute('data-type');
-                            const uHeight = DEVICE_TYPES[type].uHeight || 1;
-
-                            if (!this.canPlaceDevice(startSubSlot, uHeight, this.draggedElement)) {
-                                Toast.show(`❌ Cannot move: Not enough space available at target position!`);
-                                return;
-                            }
-
+                            if (!this.canPlaceDevice(startSubSlot, DEVICE_TYPES[type].uHeight, this.draggedElement)) return Toast.show(`❌ Cannot move: Position occupied!`);
                             slotRow.appendChild(this.draggedElement);
                             this.rebindDevicePortIds(this.draggedElement, startSubSlot);
                         }
@@ -1338,16 +924,12 @@
             },
 
             rebindDevicePortIds(device, startSubSlot) {
-                const type = device.getAttribute('data-type');
-                const spec = DEVICE_TYPES[type];
-
+                const spec = DEVICE_TYPES[device.getAttribute('data-type')];
                 device.style.height = `${spec.uHeight * 48}px`;
-
                 device.querySelectorAll('.port-rj45').forEach((port, idx) => {
-                    const oldId = port.dataset.portId;
-                    const newId = `sub${startSubSlot}-p${idx}`;
+                    const oldId = port.dataset.portId, newId = `sub${startSubSlot}-p${idx}`;
                     port.dataset.portId = newId;
-                    App.connections.forEach(c => {
+                    this.connections.forEach(c => {
                         if (c.from === oldId) c.from = newId;
                         if (c.to === oldId) c.to = newId;
                     });
@@ -1356,8 +938,7 @@
 
             setupKeyboardDelete() {
                 document.addEventListener('keydown', e => {
-                    if (e.key === 'Delete' || e.key === 'Backspace') {
-                        if (document.activeElement.tagName === 'INPUT') return;
+                    if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement.tagName !== 'INPUT') {
                         const selected = document.querySelector('.device.placed.selected');
                         if (selected) this.removeDevice(selected);
                     }
@@ -1366,31 +947,19 @@
 
             setupGlobalControls() {
                 document.getElementById('input-max-u').addEventListener('change', e => {
-                    let val = parseInt(e.target.value);
-                    if (isNaN(val) || val < 1) val = 1;
-                    if (val > 16) val = 16;
-                    e.target.value = val;
-                    App.changeMaxU(val);
+                    let val = Math.min(16, Math.max(1, parseInt(e.target.value) || 1));
+                    e.target.value = val; this.changeMaxU(val);
                 });
-
                 document.getElementById('btn-zoom-in').addEventListener('click', () => { if (this.currentZoom < 1.4) { this.currentZoom += 0.1; this.applyZoom(); } });
                 document.getElementById('btn-zoom-out').addEventListener('click', () => { if (this.currentZoom > 0.6) { this.currentZoom -= 0.1; this.applyZoom(); } });
                 document.getElementById('btn-zoom-reset').addEventListener('click', () => { this.currentZoom = 1.0; this.applyZoom(); });
-
                 document.getElementById('btn-dark-mode').addEventListener('click', () => {
                     document.body.classList.toggle('dark-mode');
                     localStorage.setItem('unifi_rack_sim_dark', document.body.classList.contains('dark-mode'));
                 });
-
                 document.getElementById('btn-clear').addEventListener('click', () => {
-                    if (confirm('Are you sure you want to clear the entire rack?')) {
-                        document.querySelectorAll('.sub-slot-row .device').forEach(d => d.remove());
-                        this.connections = []; this.update();
-                    }
+                    if (confirm('Clear the entire rack?')) { document.querySelectorAll('.sub-slot-row .device').forEach(d => d.remove()); this.connections = []; this.update(); }
                 });
-
-                document.getElementById('btn-export-png').addEventListener('click', () => this.exportPNG());
-                document.getElementById('btn-export').addEventListener('click', () => this.exportReport());
             },
 
             applyZoom() {
@@ -1402,10 +971,8 @@
 
             changeMaxU(newMaxU) {
                 if (newMaxU === this.maxU) return;
-                const maxSub = newMaxU * 2;
-                const filtered = this.getRackState().filter(item => item.startSubSlot <= maxSub);
-                this.maxU = newMaxU;
-                this.renderSlots(); this.setupDragAndDrop();
+                const filtered = this.getRackState().filter(item => item.startSubSlot <= newMaxU * 2);
+                this.maxU = newMaxU; this.renderSlots(); this.setupDragAndDrop();
                 this.applyState({ maxU: newMaxU, rack: filtered, connections: this.connections });
             },
 
@@ -1419,122 +986,74 @@
 
             update() {
                 this.updateOccupiedSlots();
-                this.validateConnections();
-                this.requestRedraw();
-                this.updateReport();
-                this.autoSave();
-            },
-
-            validateConnections() {
-                this.connections = this.connections.filter(c => 
-                    document.querySelector(`[data-port-id="${c.from}"]`) && document.querySelector(`[data-port-id="${c.to}"]`)
-                );
+                this.connections = this.connections.filter(c => document.querySelector(`[data-port-id="${c.from}"]`) && document.querySelector(`[data-port-id="${c.to}"]`));
+                this.requestRedraw(); this.updateReport(); this.autoSave();
             },
 
             requestRedraw() {
                 if (this.redrawPending) return;
                 this.redrawPending = true;
-                requestAnimationFrame(() => {
-                    this.redrawConnections();
-                    this.redrawPending = false;
-                });
+                requestAnimationFrame(() => { this.redrawConnections(); this.redrawPending = false; });
             },
 
             redrawConnections() {
-                const svg = document.getElementById('cable-svg');
-                if (!svg) return;
-
+                const svg = document.getElementById('cable-svg'); if (!svg) return;
                 svg.querySelectorAll('path').forEach(p => p.remove());
                 document.querySelectorAll('.sub-slot-row .led').forEach(led => led.className = 'led');
 
-                let stdCount = 0, xgCount = 0, wanCount = 0, sfpCount = 0, patchCount = 0, conflictCount = 0;
+                let counts = { std: 0, xg: 0, wan: 0, sfp: 0, patch: 0, conflict: 0 };
 
-                this.connections.forEach((c, index) => {
-                    const portA = document.querySelector(`[data-port-id="${c.from}"]`);
-                    const portB = document.querySelector(`[data-port-id="${c.to}"]`);
-                    if (!portA || !portB) return;
+                this.connections.forEach((c, idx) => {
+                    const pA = document.querySelector(`[data-port-id="${c.from}"]`);
+                    const pB = document.querySelector(`[data-port-id="${c.to}"]`);
+                    if (!pA || !pB) return;
 
-                    const ptA = getPortCenterInSVG(svg, portA);
-                    const ptB = getPortCenterInSVG(svg, portB);
+                    const ptA = getPortCenterInSVG(svg, pA), ptB = getPortCenterInSVG(svg, pB);
+                    const dx = Math.abs(ptB.x - ptA.x), dy = Math.abs(ptB.y - ptA.y);
+                    const sag = Math.max(dy, 60) + dx * 0.25;
+                    let cpx1 = ptA.x, cpx2 = ptB.x;
+                    if (dx < 40) { const off = (40 - dx) * 0.8; cpx1 += off; cpx2 += off; }
 
-                    const x1 = ptA.x, y1 = ptA.y;
-                    const x2 = ptB.x, y2 = ptB.y;
+                    let color = '#3b82f6';
+                    const typeA = this.getPortType(c.from), typeB = this.getPortType(c.to);
+                    const mediaA = PORT_MEDIA_TYPES[typeA], mediaB = PORT_MEDIA_TYPES[typeB];
 
-                    const dx = Math.abs(x2 - x1);
-                    const dy = Math.abs(y2 - y1);
-                    let sag = Math.max(dy, 60) + dx * 0.25;
-
-                    let cp_x1 = x1, cp_x2 = x2;
-                    if (dx < 40) {
-                        const loopOffset = (40 - dx) * 0.8;
-                        cp_x1 += loopOffset; cp_x2 += loopOffset;
-                    }
+                    if (mediaA !== 'any' && mediaB !== 'any' && mediaA !== mediaB) { color = 'var(--accent-red)'; counts.conflict++; }
+                    else if (typeA === 'sfp' || typeB === 'sfp') { color = 'var(--accent-sfp)'; counts.sfp++; }
+                    else if (typeA?.startsWith('wan') || typeB?.startsWith('wan')) { color = 'var(--accent-red)'; counts.wan++; }
+                    else if (typeA?.includes('10g') || typeB?.includes('10g')) { color = 'var(--accent-orange)'; counts.xg++; }
+                    else if (pA.closest('.device')?.getAttribute('data-type').includes('patch') && pB.closest('.device')?.getAttribute('data-type').includes('patch')) { color = '#cbd5e1'; counts.patch++; }
+                    else counts.std++;
 
                     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    const d = `M ${x1} ${y1} C ${cp_x1} ${y1 + sag} ${cp_x2} ${y2 + sag} ${x2} ${y2}`;
-
-                    let cableColor = '#3b82f6';
-                    const ptypeA = this.getPortType(c.from);
-                    const ptypeB = this.getPortType(c.to);
-                    const mediaA = PORT_MEDIA_TYPES[ptypeA];
-                    const mediaB = PORT_MEDIA_TYPES[ptypeB];
-
-                    if (mediaA !== 'any' && mediaB !== 'any' && mediaA !== mediaB) {
-                        cableColor = 'var(--accent-red)'; conflictCount++;
-                    } else if (ptypeA === 'sfp' || ptypeB === 'sfp') {
-                        cableColor = 'var(--accent-sfp)'; sfpCount++;
-                    } else if (ptypeA && ptypeA.startsWith('wan') || ptypeB && ptypeB.startsWith('wan')) {
-                        cableColor = 'var(--accent-red)'; wanCount++;
-                    } else if (ptypeA && ptypeA.includes('10g') || ptypeB && ptypeB.includes('10g')) {
-                        cableColor = 'var(--accent-orange)'; xgCount++;
-                    } else if (portA.closest('.device') && portB.closest('.device') &&
-                               portA.closest('.device').getAttribute('data-type').includes('patch') &&
-                               portB.closest('.device').getAttribute('data-type').includes('patch')) {
-                        cableColor = '#cbd5e1'; patchCount++;
-                    } else {
-                        stdCount++;
-                    }
-
-                    path.setAttribute('id', `cable-${index}`);
                     path.setAttribute('class', 'cable-path');
-                    path.setAttribute('d', d);
-                    path.setAttribute('stroke', cableColor);
-                    path.setAttribute('stroke-width', '2.8');
-                    path.setAttribute('fill', 'none');
-                    path.setAttribute('stroke-linecap', 'round');
+                    path.setAttribute('d', `M ${ptA.x} ${ptA.y} C ${cpx1} ${ptA.y + sag} ${cpx2} ${ptB.y + sag} ${ptB.x} ${ptB.y}`);
+                    path.setAttribute('stroke', color); path.setAttribute('stroke-width', '2.8');
+                    path.setAttribute('fill', 'none'); path.setAttribute('stroke-linecap', 'round');
                     path.setAttribute('filter', 'url(#cable-shadow)');
-                    
                     svg.appendChild(path);
-                    this.lightLED(portA); this.lightLED(portB);
+
+                    this.lightLED(pA); this.lightLED(pB);
                 });
 
                 document.getElementById('cable-count-badge').textContent = this.connections.length;
-                document.getElementById('cnt-std').textContent = stdCount;
-                document.getElementById('cnt-10g').textContent = xgCount;
-                document.getElementById('cnt-wan').textContent = wanCount;
-                document.getElementById('cnt-sfp').textContent = sfpCount;
-                document.getElementById('cnt-patch').textContent = patchCount;
-                document.getElementById('cnt-conflict').textContent = conflictCount;
+                document.getElementById('cnt-std').textContent = counts.std;
+                document.getElementById('cnt-10g').textContent = counts.xg;
+                document.getElementById('cnt-wan').textContent = counts.wan;
+                document.getElementById('cnt-sfp').textContent = counts.sfp;
+                document.getElementById('cnt-patch').textContent = counts.patch;
+                document.getElementById('cnt-conflict').textContent = counts.conflict;
             },
 
             getPortType(portId) {
                 const port = document.querySelector(`[data-port-id="${portId}"]`);
-                if (!port) return null;
-                const dev = port.closest('.device');
-                if (!dev) return null;
-                const type = dev.getAttribute('data-type');
-                const spec = DEVICE_TYPES[type];
-                const parts = portId.split('-p');
-                const idx = parseInt(parts[1]);
-                return spec ? spec.ports[idx] : null;
+                const spec = DEVICE_TYPES[port?.closest('.device')?.getAttribute('data-type')];
+                return spec ? spec.ports[parseInt(portId.split('-p')[1])] : null;
             },
 
             lightLED(port) {
-                const unit = port.closest('.switch-port-unit');
-                if (!unit) return;
-                const led = unit.querySelector('.led');
+                const led = port.closest('.switch-port-unit')?.querySelector('.led');
                 if (!led) return;
-
                 if (port.classList.contains('port-sfp')) led.className = 'led active-cyan blink-slow';
                 else if (port.classList.contains('port-10g')) led.className = 'led active-orange blink';
                 else if (port.classList.contains('port-poe')) led.className = 'led active-blue blink';
@@ -1542,25 +1061,16 @@
             },
 
             updateReport() {
-                const container = document.getElementById('report-list');
-                container.innerHTML = '';
-                const totalSubSlots = this.maxU * 2;
-
-                for (let sub = totalSubSlots; sub >= 1; sub--) {
-                    const row = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"]`);
-                    const dev = row ? row.querySelector('.device.placed') : null;
-                    const uNum = Math.ceil(sub / 2);
-                    const posName = sub % 2 === 0 ? 'Top' : 'Bot';
-
-                    const item = document.createElement('div');
-                    item.className = 'report-item';
-
+                const container = document.getElementById('report-list'); container.innerHTML = '';
+                for (let sub = this.maxU * 2; sub >= 1; sub--) {
+                    const dev = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"] .device.placed`);
+                    const item = document.createElement('div'); item.className = 'report-item';
+                    const label = `U${Math.ceil(sub / 2)} ${sub % 2 === 0 ? 'Top' : 'Bot'}`;
                     if (dev) {
                         item.classList.add('occupied');
-                        const spec = DEVICE_TYPES[dev.getAttribute('data-type')];
-                        item.innerHTML = `<span class="u-badge">U${uNum} ${posName}</span><span class="text-blue" style="text-align:right;">${spec.name}</span>`;
+                        item.innerHTML = `<span class="u-badge">${label}</span><span class="text-blue">${DEVICE_TYPES[dev.getAttribute('data-type')].name}</span>`;
                     } else {
-                        item.innerHTML = `<span class="u-badge text-muted">U${uNum} ${posName}</span><span class="text-muted">(Empty)</span>`;
+                        item.innerHTML = `<span class="u-badge text-muted">${label}</span><span class="text-muted">(Empty)</span>`;
                     }
                     container.appendChild(item);
                 }
@@ -1568,15 +1078,13 @@
 
             getRackState() {
                 const layout = [];
-                const totalSubSlots = this.maxU * 2;
-                for (let sub = totalSubSlots; sub >= 1; sub--) {
-                    const row = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"]`);
-                    if (!row) continue;
-                    const dev = row.querySelector('.device.placed');
+                for (let sub = this.maxU * 2; sub >= 1; sub--) {
+                    const dev = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"] .device.placed`);
                     if (dev) {
-                        const type = dev.getAttribute('data-type');
-                        const labels = Array.from(dev.querySelectorAll('.port-label')).map(inp => inp.value);
-                        layout.push({ startSubSlot: sub, type, labels });
+                        layout.push({
+                            startSubSlot: sub, type: dev.getAttribute('data-type'),
+                            labels: Array.from(dev.querySelectorAll('.port-label')).map(inp => inp.value)
+                        });
                     }
                 }
                 return layout;
@@ -1585,21 +1093,17 @@
             applyState(state) {
                 this.maxU = state.maxU || 10;
                 document.getElementById('input-max-u').value = this.maxU;
-                this.renderSlots(); 
-                this.setupDragAndDrop();
-
+                this.renderSlots(); this.setupDragAndDrop();
                 document.querySelectorAll('.sub-slot-row .device').forEach(d => d.remove());
+
                 state.rack.forEach(item => {
                     const row = document.querySelector(`.sub-slot-row[data-sub-slot="${item.startSubSlot}"]`);
                     if (row) {
                         const dev = DeviceFactory.create(item.type, item.startSubSlot);
                         row.appendChild(dev);
-                        if (item.labels) {
-                            dev.querySelectorAll('.port-label').forEach((inp, idx) => inp.value = item.labels[idx] || '');
-                        }
+                        if (item.labels) dev.querySelectorAll('.port-label').forEach((inp, idx) => inp.value = item.labels[idx] || '');
                     }
                 });
-
                 this.connections = state.connections || [];
                 this.update();
             },
@@ -1610,85 +1114,22 @@
 
             loadFromStorage() {
                 const raw = localStorage.getItem('unifi_rack_sim_state_v3');
-                if (raw) {
-                    try { this.applyState(JSON.parse(raw)); } catch(e) {}
-                }
-            },
-
-            exportPNG() {
-                const target = document.getElementById('rack-wrapper');
-                const btn = document.getElementById('btn-export-png');
-                if (!target) return;
-
-                const originalText = btn.textContent;
-                btn.textContent = '⏳ Generating Screenshot...';
-                btn.disabled = true;
-
-                document.querySelectorAll('.device.placed.selected').forEach(d => d.classList.remove('selected'));
-                const savedTransform = target.style.transform;
-                target.style.transform = 'none';
-
-                const cabinet = target.querySelector('.rack-cabinet');
-                const savedShadow = cabinet.style.boxShadow;
-                cabinet.style.boxShadow = 'none';
-
-                html2canvas(target, {
-                    scale: 2,
-                    backgroundColor: null,
-                    useCORS: true,
-                    logging: false
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    const dateStr = new Date().toISOString().slice(0, 10);
-                    link.download = `UniFi-10inch-Rack-${dateStr}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                }).catch(err => {
-                    alert('Screenshot generation failed, please try again!');
-                    console.error(err);
-                }).finally(() => {
-                    target.style.transform = savedTransform;
-                    cabinet.style.boxShadow = savedShadow;
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                });
-            },
-
-            exportReport() {
-                let report = `============ UniFi 10-Inch Matte White Rack Assembly Report (${this.maxU}U) ============\n`;
-                this.getRackState().forEach(r => {
-                    report += `[SubSlot ${r.startSubSlot}] - ${DEVICE_TYPES[r.type].name}\n`;
-                });
-                navigator.clipboard.writeText(report).then(() => alert('Report copied successfully!'));
+                if (raw) { try { this.applyState(JSON.parse(raw)); } catch(e) {} }
             }
         };
 
         const Tooltip = {
             el: document.getElementById('global-tooltip'),
             show(e, ptype, startSubSlot, idx) {
-                const spec = PORT_SPECS[ptype];
-                if (!spec) return;
-
+                const spec = PORT_SPECS[ptype]; if (!spec) return;
                 let text = `<strong>${spec.title}</strong><br><span style="color:var(--accent-sfp);">${spec.speed}</span>`;
                 if (startSubSlot) text = `[SubSlot ${startSubSlot} - Port ${idx+1}]<br>` + text;
-
-                this.el.innerHTML = text;
-                this.el.style.display = 'block';
+                this.el.innerHTML = text; this.el.style.display = 'block';
 
                 const rect = e.target.getBoundingClientRect();
-                let left = rect.left + rect.width / 2;
-                let top = rect.top;
-
-                if (top < 80) {
-                    this.el.classList.add('tooltip-bottom');
-                    this.el.style.top = `${rect.bottom}px`;
-                } else {
-                    this.el.classList.remove('tooltip-bottom');
-                    this.el.style.top = `${rect.top}px`;
-                }
-
-                left = Math.max(10, Math.min(window.innerWidth - 10, left));
-                this.el.style.left = `${left}px`;
+                this.el.classList.toggle('tooltip-bottom', rect.top < 80);
+                this.el.style.top = `${rect.top < 80 ? rect.bottom : rect.top}px`;
+                this.el.style.left = `${Math.max(10, Math.min(window.innerWidth - 10, rect.left + rect.width / 2))}px`;
             },
             hide() { this.el.style.display = 'none'; }
         };
