@@ -44,9 +44,13 @@
         .rack-wrapper-container { width: 100%; overflow: visible; display: flex; justify-content: center; padding: 40px 0; }
         .rack-wrapper { position: relative; width: 372px; transition: transform 0.15s ease-out; padding-top: 35px; }
         #cable-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: visible; }
-        svg path.cable-path { pointer-events: visibleStroke; transition: stroke-width 0.2s, stroke 0.2s; stroke-dasharray: 8, 3; animation: cableFlow 12s linear infinite; }
-        svg path.cable-path:hover { stroke-width: 4.5px !important; cursor: pointer; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
+        
+        /* Cable Styles & Hover Focus */
+        svg path.cable-path { pointer-events: visibleStroke; transition: opacity 0.2s, stroke-width 0.2s, stroke 0.2s; stroke-dasharray: 8, 3; animation: cableFlow 12s linear infinite; }
+        svg path.cable-path.dimmed { opacity: 0.15 !important; }
+        svg path.cable-path.highlighted { stroke-width: 4.5px !important; filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)); }
         @keyframes cableFlow { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
+        
         .rack-cabinet { width: 100%; background: #1e293b; border: 2px solid #475569; padding: 24px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 20px 40px -10px rgba(0,0,0,0.4); box-sizing: border-box; position: relative; transition: background-color 0.3s, border-color 0.3s; }
         .rack-top-handles { position: absolute; top: -24px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 38px; pointer-events: none; z-index: 5; }
         .industrial-handle { width: 68px; height: 26px; position: relative; }
@@ -62,8 +66,12 @@
         .sub-slot-row::after { right: 0; border-left: 1px solid #475569; }
         .rail-screw-hole-l, .rail-screw-hole-r { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #1e293b; border: 1px solid #94a3b8; z-index: 2; top: 9px; }
         .rail-screw-hole-l { left: 7px; } .rail-screw-hole-r { right: 7px; }
-        .sub-slot-bay { width: 280px; height: 24px; margin-left: 20px; border: 1px dashed rgba(255, 255, 255, 0.1); box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 8.5px; font-family: monospace; background-color: rgba(15, 23, 42, 0.4); transition: all 0.2s ease; z-index: 2; }
-        .sub-slot-bay.drag-over { border-color: var(--accent-blue); background-color: rgba(0, 85, 255, 0.25); color: var(--accent-blue); }
+        
+        /* Drag Highlighting Styles */
+        .sub-slot-bay { width: 280px; height: 24px; margin-left: 20px; border: 1px dashed rgba(255, 255, 255, 0.1); box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 8.5px; font-family: monospace; background-color: rgba(15, 23, 42, 0.4); transition: all 0.15s ease; z-index: 2; }
+        .sub-slot-bay.drag-over { border-color: var(--accent-blue); background-color: rgba(0, 85, 255, 0.35); color: #ffffff; }
+        .sub-slot-bay.drag-invalid { border-color: var(--accent-red) !important; background-color: rgba(239, 68, 68, 0.35) !important; color: #ffffff !important; }
+
         .device { width: 100%; height: 100%; display: flex; align-items: center; background: #ffffff; color: #475569; user-select: none; box-sizing: border-box; position: relative; z-index: 5; border-radius: 2px; outline: none; border: 1.5px solid #cbd5e1; }
         body.dark-mode .device:not(.placed) { background: #1e293b; color: #f8fafc; border-color: #475569; }
         .device.placed { position: absolute; top: 0; left: 0; width: 320px !important; z-index: 20; animation: snapEffect 0.15s ease-out; border: none; box-sizing: border-box; }
@@ -353,6 +361,7 @@
                     <button id="btn-zoom-reset" class="btn" style="flex:1;">Reset</button>
                     <button id="btn-zoom-in" class="btn" style="flex:1;">🔍+ Zoom In</button>
                 </div>
+                <button id="btn-autofill" class="btn" style="margin-top: 4px;">✨ Auto-Fill Empty Slots</button>
                 <button id="btn-clear" class="btn" style="margin-top: 4px;">Clear Entire Rack</button>
             </div>
 
@@ -736,7 +745,10 @@
                     e.dataTransfer.effectAllowed = 'move';
                     device.classList.add('dragging'); e.stopPropagation();
                 });
-                device.addEventListener('dragend', () => device.classList.remove('dragging'));
+                device.addEventListener('dragend', () => {
+                    device.classList.remove('dragging');
+                    App.clearSlotHighlights();
+                });
 
                 const deleteBtn = document.createElement('div');
                 deleteBtn.className = 'delete-btn'; deleteBtn.innerHTML = '×';
@@ -823,6 +835,58 @@
                 this.loadFromStorage();
             },
 
+            getDraggedUHeight() {
+                if (!this.draggedElement) return 0.5;
+                if (this.isFromSidebar) {
+                    const type = this.draggedElement.getAttribute('data-device-type');
+                    return DEVICE_TYPES[type]?.uHeight || 0.5;
+                } else {
+                    const type = this.draggedElement.getAttribute('data-type');
+                    return DEVICE_TYPES[type]?.uHeight || 0.5;
+                }
+            },
+
+            clearSlotHighlights() {
+                document.querySelectorAll('.sub-slot-bay').forEach(bay => {
+                    bay.classList.remove('drag-over', 'drag-invalid');
+                });
+            },
+
+            highlightSlots(startSubSlot, uHeight) {
+                this.clearSlotHighlights();
+                const count = Math.round(uHeight * 2);
+                const start = parseInt(startSubSlot);
+                const isValid = this.canPlaceDevice(start, uHeight, this.isFromSidebar ? null : this.draggedElement);
+
+                for (let i = 0; i < count; i++) {
+                    const sub = start - i;
+                    if (sub >= 1) {
+                        const bay = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"] .sub-slot-bay`);
+                        if (bay) {
+                            bay.classList.add(isValid ? 'drag-over' : 'drag-invalid');
+                        }
+                    }
+                }
+            },
+
+            autoFillBlanks() {
+                const totalSubSlots = this.maxU * 2;
+                for (let sub = totalSubSlots; sub >= 1; sub--) {
+                    const bay = document.querySelector(`.sub-slot-row[data-sub-slot="${sub}"] .sub-slot-bay`);
+                    if (bay && bay.style.display !== 'none') {
+                        if (sub > 1 && this.canPlaceDevice(sub, 1)) {
+                            const row = bay.parentElement;
+                            row.appendChild(DeviceFactory.create('blank', sub));
+                            sub--;
+                        } else if (this.canPlaceDevice(sub, 0.5)) {
+                            const row = bay.parentElement;
+                            row.appendChild(DeviceFactory.create('deskpi-dp0043', sub));
+                        }
+                    }
+                }
+                this.update();
+            },
+
             renderSidebar() {
                 const catContainer = document.getElementById('sidebar-categories'); catContainer.innerHTML = '';
                 CATEGORIES.forEach(cat => {
@@ -839,7 +903,10 @@
                             this.draggedElement = card; this.isFromSidebar = true;
                             e.dataTransfer.effectAllowed = 'copy'; card.classList.add('dragging');
                         });
-                        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+                        card.addEventListener('dragend', () => {
+                            card.classList.remove('dragging');
+                            this.clearSlotHighlights();
+                        });
                         block.appendChild(card);
                     });
                     catContainer.appendChild(block);
@@ -901,10 +968,16 @@
 
             setupDragAndDrop() {
                 document.querySelectorAll('.sub-slot-bay').forEach(bay => {
-                    bay.addEventListener('dragover', e => { e.preventDefault(); bay.classList.add('drag-over'); });
-                    bay.addEventListener('dragleave', () => bay.classList.remove('drag-over'));
+                    bay.addEventListener('dragover', e => {
+                        e.preventDefault();
+                        const startSubSlot = parseInt(bay.getAttribute('data-sub-slot'));
+                        const uHeight = this.getDraggedUHeight();
+                        this.highlightSlots(startSubSlot, uHeight);
+                    });
+
                     bay.addEventListener('drop', e => {
-                        e.preventDefault(); bay.classList.remove('drag-over');
+                        e.preventDefault();
+                        this.clearSlotHighlights();
                         const startSubSlot = parseInt(bay.getAttribute('data-sub-slot'));
                         const slotRow = bay.parentElement;
 
@@ -921,6 +994,15 @@
                         this.update();
                     });
                 });
+
+                const container = document.getElementById('slots-container');
+                if (container) {
+                    container.addEventListener('dragleave', e => {
+                        if (!container.contains(e.relatedTarget)) {
+                            this.clearSlotHighlights();
+                        }
+                    });
+                }
             },
 
             rebindDevicePortIds(device, startSubSlot) {
@@ -938,9 +1020,40 @@
 
             setupKeyboardDelete() {
                 document.addEventListener('keydown', e => {
-                    if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement.tagName !== 'INPUT') {
-                        const selected = document.querySelector('.device.placed.selected');
-                        if (selected) this.removeDevice(selected);
+                    if (e.key === 'Escape') {
+                        if (CableManager.dragStartPort) {
+                            CableManager.endConnection(null);
+                        }
+                        return;
+                    }
+
+                    if (document.activeElement.tagName === 'INPUT') return;
+
+                    const selected = document.querySelector('.device.placed.selected');
+                    if (!selected) return;
+
+                    if (e.key === 'Delete' || e.key === 'Backspace') {
+                        this.removeDevice(selected);
+                    }
+
+                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        const currentSub = parseInt(selected.parentElement?.getAttribute('data-sub-slot'));
+                        const targetSub = e.key === 'ArrowUp' ? currentSub + 1 : currentSub - 1;
+                        const type = selected.getAttribute('data-type');
+                        const uHeight = DEVICE_TYPES[type].uHeight;
+
+                        if (this.canPlaceDevice(targetSub, uHeight, selected)) {
+                            const targetRow = document.querySelector(`.sub-slot-row[data-sub-slot="${targetSub}"]`);
+                            if (targetRow) {
+                                targetRow.appendChild(selected);
+                                this.rebindDevicePortIds(selected, targetSub);
+                                this.update();
+                                selected.focus();
+                            }
+                        } else {
+                            Toast.show('❌ Position occupied or out of bounds!');
+                        }
                     }
                 });
             },
@@ -957,6 +1070,7 @@
                     document.body.classList.toggle('dark-mode');
                     localStorage.setItem('unifi_rack_sim_dark', document.body.classList.contains('dark-mode'));
                 });
+                document.getElementById('btn-autofill').addEventListener('click', () => this.autoFillBlanks());
                 document.getElementById('btn-clear').addEventListener('click', () => {
                     if (confirm('Clear the entire rack?')) { document.querySelectorAll('.sub-slot-row .device').forEach(d => d.remove()); this.connections = []; this.update(); }
                 });
@@ -1031,6 +1145,19 @@
                     path.setAttribute('stroke', color); path.setAttribute('stroke-width', '2.8');
                     path.setAttribute('fill', 'none'); path.setAttribute('stroke-linecap', 'round');
                     path.setAttribute('filter', 'url(#cable-shadow)');
+
+                    path.addEventListener('mouseenter', () => {
+                        document.querySelectorAll('.cable-path').forEach(p => {
+                            if (p === path) p.classList.add('highlighted');
+                            else p.classList.add('dimmed');
+                        });
+                    });
+                    path.addEventListener('mouseleave', () => {
+                        document.querySelectorAll('.cable-path').forEach(p => {
+                            p.classList.remove('highlighted', 'dimmed');
+                        });
+                    });
+
                     svg.appendChild(path);
 
                     this.lightLED(pA); this.lightLED(pB);
